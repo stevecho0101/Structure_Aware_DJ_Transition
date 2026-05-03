@@ -1,1 +1,7 @@
 __pycache__/
+salami_mp3s/
+test-archive/*.mp3
+test-archive/.cache
+*.npy
+download_log.txt
+.DS_Store
