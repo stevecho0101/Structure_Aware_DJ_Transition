@@ -6,3 +6,4 @@ test-archive/.cache
 download_log.txt
 .DS_Store
 .DS_Store
+.vscode/
