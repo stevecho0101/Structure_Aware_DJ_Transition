@@ -150,10 +150,11 @@ Install additional dependencies:
 pip install anthropic flask
 ```
 
-Set your Anthropic API key in `agent.py` and `app.py`:
+Set your Anthropic API key in `agent.py` and `app.py` (ask Anthony for API Key):
 ```python
-client = anthropic.Anthropic(api_key="your_key_here") (ask Anthony for API Key)
+client = anthropic.Anthropic(api_key="your_key_here") 
 ```
+
 
 Create the song samples folder and add a few mp3s:
 ```
