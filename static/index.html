@@ -1,0 +1,415 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<title>Structure-Aware Automix</title>
+<style>
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; background: #0d0d0d; color: #f0f0f0; min-height: 100vh; padding: 2rem; }
+.header { display: flex; align-items: center; gap: 12px; margin-bottom: 2rem; }
+.logo { width: 40px; height: 40px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
+.app-title { font-size: 20px; font-weight: 600; }
+.app-sub { font-size: 13px; color: #888; margin-top: 2px; }
+.select-row { display: flex; gap: 10px; margin-bottom: 1.5rem; align-items: center; }
+select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-radius: 8px; padding: 10px 14px; font-size: 14px; flex: 1; outline: none; }
+.btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
+.btn:disabled { opacity: 0.4; cursor: not-allowed; }
+.btn-play { background: #1db954; color: #fff; min-width: 80px; }
+.btn-play:hover:not(:disabled) { background: #1aa34a; }
+.btn-analyze { background: #f0f0f0; color: #0d0d0d; }
+.btn-analyze:hover:not(:disabled) { background: #d0d0d0; }
+.btn-skip { background: #222; color: #f0f0f0; border: 1px solid #333; padding: 10px 14px; font-size: 13px; }
+.btn-skip:hover:not(:disabled) { background: #2a2a2a; }
+.btn-next { background: #f59e0b; color: #000; font-weight: 600; }
+.btn-next:hover:not(:disabled) { background: #d97706; }
+.player-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+.player-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
+.live-badge { background: #1db954; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 20px; animation: pulse 2s infinite; }
+.next-badge { background: #333; color: #888; font-size: 10px; padding: 2px 8px; border-radius: 20px; }
+.song-name { font-size: 16px; font-weight: 600; margin-bottom: 2px; }
+.song-meta { font-size: 13px; color: #888; margin-bottom: 14px; }
+.progress-wrap { position: relative; margin-bottom: 6px; cursor: pointer; padding: 6px 0; }
+.progress-bg { height: 4px; background: #333; border-radius: 2px; }
+.progress-fill { height: 4px; background: #1db954; border-radius: 2px; width: 0%; pointer-events: none; }
+.transition-marker { position: absolute; top: 2px; width: 3px; height: 12px; background: #f59e0b; border-radius: 2px; transform: translateX(-50%); pointer-events: none; }
+.time-row { display: flex; justify-content: space-between; font-size: 11px; color: #666; margin-top: 4px; margin-bottom: 12px; }
+.controls-row { display: flex; gap: 8px; align-items: center; margin-bottom: 12px; flex-wrap: wrap; }
+.structure { display: flex; flex-wrap: wrap; gap: 4px; margin-bottom: 10px; }
+.pill { font-size: 11px; font-weight: 500; padding: 3px 8px; border-radius: 20px; }
+.pill-intro { background: #1e3a5f; color: #7eb8f7; }
+.pill-verse { background: #1a3a1a; color: #6fcf6f; }
+.pill-chorus { background: #3a2a00; color: #f5c842; }
+.pill-outro { background: #2a1a3a; color: #b07ef7; }
+.pill.active { outline: 2px solid #fff; outline-offset: 1px; }
+.cut-info { font-size: 12px; color: #666; }
+.cut-info span { color: #f5c842; font-weight: 500; }
+.reasoning { background: #111; border: 1px solid #222; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+.reasoning-label { font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.reasoning-text { font-size: 13px; color: #888; line-height: 1.7; }
+.played-list { font-size: 12px; color: #555; margin-top: 0.5rem; }
+.status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; margin-top: 1rem; }
+.dot { width: 7px; height: 7px; border-radius: 50%; background: #1db954; }
+.dot.thinking { background: #f59e0b; animation: pulse 0.8s infinite; }
+.dot.idle { background: #555; }
+@keyframes pulse { 0%,100%{opacity:1} 50%{opacity:0.3} }
+.hidden { display: none; }
+.crossfade-overlay { position: fixed; top: 20px; right: 20px; background: #f59e0b; color: #000; font-size: 13px; font-weight: 600; padding: 10px 16px; border-radius: 8px; z-index: 100; }
+</style>
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">🎛️</div>
+  <div>
+    <div class="app-title">Structure-Aware Automix</div>
+    <div class="app-sub">Live DJ transition assistant</div>
+  </div>
+</div>
+
+<div class="select-row">
+  <select id="songSelect"><option value="">Select a song to play...</option></select>
+  <button class="btn btn-play" id="playBtn" onclick="startPlayback()">▶ Play</button>
+  <button class="btn btn-analyze" id="analyzeBtn" onclick="runAgent()" disabled>Analyze next</button>
+</div>
+
+<div id="nowPlayingCard" class="player-card hidden">
+  <div class="player-label">Now playing <span class="live-badge">● LIVE</span></div>
+  <div class="song-name" id="nowName">—</div>
+  <div class="song-meta" id="nowMeta">—</div>
+  <div class="progress-wrap" id="progressWrap" onclick="seekClick(event)">
+    <div class="progress-bg"><div class="progress-fill" id="progressFill"></div></div>
+    <div class="transition-marker hidden" id="transitionMarker"></div>
+  </div>
+  <div class="time-row">
+    <span id="currentTime">0:00</span>
+    <span id="transitionHint" style="color:#f5c842"></span>
+    <span id="totalTime">0:00</span>
+  </div>
+  <div class="controls-row">
+    <button class="btn btn-skip" onclick="seekBy(-10)">⏪ -10s</button>
+    <button class="btn btn-skip" onclick="seekBy(-5)">◀ -5s</button>
+    <button class="btn btn-skip" onclick="seekBy(5)">+5s ▶</button>
+    <button class="btn btn-skip" onclick="seekBy(10)">+10s ⏩</button>
+    <button class="btn btn-next" id="skipNextBtn" onclick="skipToNext()" disabled>Skip to next song ⏭</button>
+    <button class="btn btn-skip" id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
+  </div>
+  <div class="structure" id="nowStructure"></div>
+</div>
+
+<div id="upNextCard" class="player-card hidden">
+  <div class="player-label">Up next <span class="next-badge">QUEUED</span></div>
+  <div class="song-name" id="nextName">—</div>
+  <div class="song-meta" id="nextMeta">—</div>
+  <div class="structure" id="nextStructure"></div>
+  <div class="cut-info">Entering at <span id="nextCutIn">—</span> — <span id="nextSection">—</span></div>
+</div>
+
+<div id="reasoningDiv" class="reasoning hidden">
+  <div class="reasoning-label">✦ Agent reasoning</div>
+  <div class="reasoning-text" id="reasoningText">—</div>
+</div>
+
+<div class="status">
+  <div class="dot idle" id="statusDot"></div>
+  <span id="statusText">Select a song to start</span>
+</div>
+<div class="played-list" id="playedList"></div>
+
+<script>
+let audioCtx = null;
+let currentSource = null;
+let currentGain = null;
+let currentBuffer = null;
+let nextBuffer = null;
+let startTime = 0;
+let seekOffset = 0;
+let isPlaying = false;
+let agentResult = null;
+let transitionScheduled = false;
+let progressInterval = null;
+let currentSongDuration = 0;
+let currentSongFile = null;
+let playedSongs = [];
+let isPaused = false;
+let pausedAt = 0;
+
+async function loadSongs() {
+  const res = await fetch('/songs');
+  const data = await res.json();
+  const sel = document.getElementById('songSelect');
+  sel.innerHTML = '<option value="">Select a song to play...</option>';
+  data.songs.forEach(s => {
+    const opt = document.createElement('option');
+    opt.value = s;
+    opt.textContent = s.replace('.mp3','').replace(/_/g,' ');
+    sel.appendChild(opt);
+  });
+}
+
+function toMMSS(sec) {
+  const m = Math.floor(sec/60);
+  const s = Math.floor(sec%60);
+  return m+':'+s.toString().padStart(2,'0');
+}
+
+function setStatus(text, state) {
+  document.getElementById('statusText').textContent = text;
+  document.getElementById('statusDot').className = 'dot '+(state||'idle');
+}
+
+function getElapsed() {
+  if (!audioCtx) return 0;
+  return audioCtx.currentTime - startTime + seekOffset;
+}
+
+function updatePlayedList() {
+  const el = document.getElementById('playedList');
+  if (playedSongs.length === 0) { el.textContent = ''; return; }
+  el.textContent = 'Already played: ' + playedSongs.map(s => s.replace('.mp3','').replace(/_/g,' ')).join(', ');
+}
+
+async function fetchAudio(filename) {
+  if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  const res = await fetch('/song_samples/'+filename);
+  const buf = await res.arrayBuffer();
+  return audioCtx.decodeAudioData(buf);
+}
+
+function renderStructure(id, sections) {
+  const el = document.getElementById(id);
+  el.innerHTML = '';
+  (sections||[]).forEach(s => {
+    const pill = document.createElement('span');
+    pill.className = 'pill pill-'+s.section;
+    pill.id = 'pill-'+id+'-'+s.start_sec;
+    pill.textContent = s.section+' '+toMMSS(s.start_sec);
+    el.appendChild(pill);
+  });
+}
+
+function playFrom(offset) {
+  if (!currentBuffer||!audioCtx) return;
+  if (currentSource) { try { currentSource.stop(); } catch(e){} }
+  currentSource = audioCtx.createBufferSource();
+  currentSource.buffer = currentBuffer;
+  currentGain = audioCtx.createGain();
+  currentSource.connect(currentGain);
+  currentGain.connect(audioCtx.destination);
+  const safeOffset = Math.max(0, Math.min(offset, currentSongDuration-0.1));
+  currentSource.start(0, safeOffset);
+  seekOffset = safeOffset;
+  startTime = audioCtx.currentTime;
+  transitionScheduled = false;
+}
+
+function seekBy(seconds) {
+  if (!isPlaying) return;
+  playFrom(getElapsed()+seconds);
+}
+
+function seekClick(e) {
+  if (!isPlaying) return;
+  const rect = document.getElementById('progressWrap').getBoundingClientRect();
+  const pct = (e.clientX-rect.left)/rect.width;
+  playFrom(pct*currentSongDuration);
+}
+
+function skipToNext() {
+  if (!agentResult||!nextBuffer) return;
+  transitionScheduled = true;
+  doLiveCrossfade();
+}
+
+function updateProgress() {
+  if (!isPlaying||!audioCtx) return;
+  const elapsed = getElapsed();
+  const pct = Math.min(100,(elapsed/currentSongDuration)*100);
+  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('currentTime').textContent = toMMSS(elapsed);
+
+  if (agentResult) {
+    const tOut = agentResult.transition_out.time_sec;
+    const remaining = tOut-elapsed;
+    if (remaining>0&&remaining<30) {
+      document.getElementById('transitionHint').textContent = 'transition in '+Math.ceil(remaining)+'s';
+    } else if (remaining<=0) {
+      document.getElementById('transitionHint').textContent = 'transitioning...';
+    } else {
+      document.getElementById('transitionHint').textContent = 'transition at '+toMMSS(tOut);
+    }
+
+    const sections = agentResult.current_structure||[];
+    let cur = sections[0];
+    for (const s of sections) { if (elapsed>=s.start_sec) cur=s; }
+    sections.forEach(s => {
+      const p = document.getElementById('pill-nowStructure-'+s.start_sec);
+      if (p) p.classList.toggle('active', s===cur);
+    });
+
+    if (!transitionScheduled&&remaining>0&&remaining<=5) {
+      transitionScheduled = true;
+      setTimeout(doLiveCrossfade, remaining*1000);
+      showToast('🎚️ Crossfading in '+Math.ceil(remaining)+'s...');
+    }
+  }
+}
+
+function togglePause() {
+  if (!isPlaying) return;
+  const btn = document.getElementById('pauseBtn');
+  if (!isPaused) {
+    pausedAt = getElapsed();
+    audioCtx.suspend();
+    isPaused = true;
+    btn.textContent = '▶ Resume';
+  } else {
+    audioCtx.resume();
+    isPaused = false;
+    btn.textContent = '⏸ Pause';
+  }
+}
+
+async function doLiveCrossfade() {
+  if (!nextBuffer||!audioCtx) return;
+  showToast('🎛️ Transitioning now...');
+
+  const fadeTime = 4;
+  const tIn = agentResult.transition_in.time_sec;
+
+  currentGain.gain.setValueAtTime(1, audioCtx.currentTime);
+  currentGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime+fadeTime);
+
+  const newSource = audioCtx.createBufferSource();
+  newSource.buffer = nextBuffer;
+  const newGain = audioCtx.createGain();
+  newGain.gain.setValueAtTime(0, audioCtx.currentTime);
+  newGain.gain.linearRampToValueAtTime(1, audioCtx.currentTime+fadeTime);
+  newSource.connect(newGain);
+  newGain.connect(audioCtx.destination);
+  newSource.start(0, tIn);
+
+  const nextSongName = agentResult.recommended_next_song.replace('.mp3','').replace(/_/g,' ');
+  playedSongs.push(currentSongFile);
+  updatePlayedList();
+
+  document.getElementById('nowName').textContent = nextSongName;
+  document.getElementById('nowMeta').textContent = 'auto-transitioned by agent';
+  renderStructure('nowStructure', agentResult.next_structure||[]);
+
+  currentSongFile = agentResult.recommended_next_song;
+  currentBuffer = nextBuffer;
+  currentSource = newSource;
+  currentGain = newGain;
+  currentSongDuration = nextBuffer.duration;
+  seekOffset = tIn;
+  startTime = audioCtx.currentTime;
+  agentResult = null;
+  transitionScheduled = false;
+  nextBuffer = null;
+
+  document.getElementById('upNextCard').classList.add('hidden');
+  document.getElementById('reasoningDiv').classList.add('hidden');
+  document.getElementById('transitionMarker').classList.add('hidden');
+  document.getElementById('totalTime').textContent = toMMSS(currentSongDuration);
+  document.getElementById('transitionHint').textContent = '';
+  document.getElementById('skipNextBtn').disabled = true;
+  setStatus('Playing '+nextSongName,'idle');
+  document.getElementById('analyzeBtn').disabled = false;
+}
+
+async function startPlayback() {
+  const song = document.getElementById('songSelect').value;
+  if (!song) return alert('Select a song first');
+
+  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  audioCtx = new (window.AudioContext||window.webkitAudioContext)();
+  agentResult = null;
+  transitionScheduled = false;
+  seekOffset = 0;
+  playedSongs = [song];
+  updatePlayedList();
+
+  setStatus('Loading audio...','thinking');
+  document.getElementById('playBtn').disabled = true;
+
+  currentBuffer = await fetchAudio(song);
+  currentSongFile = song;
+  currentSongDuration = currentBuffer.duration;
+
+  currentSource = audioCtx.createBufferSource();
+  currentSource.buffer = currentBuffer;
+  currentGain = audioCtx.createGain();
+  currentSource.connect(currentGain);
+  currentGain.connect(audioCtx.destination);
+  currentSource.start(0);
+  startTime = audioCtx.currentTime;
+  isPlaying = true;
+
+  document.getElementById('nowName').textContent = song.replace('.mp3','').replace(/_/g,' ');
+  document.getElementById('nowMeta').textContent = 'playing now';
+  document.getElementById('nowPlayingCard').classList.remove('hidden');
+  document.getElementById('totalTime').textContent = toMMSS(currentSongDuration);
+  document.getElementById('nowStructure').innerHTML = '';
+
+  clearInterval(progressInterval);
+  progressInterval = setInterval(updateProgress, 500);
+
+  setStatus('Playing — click Analyze next to get transition recommendation','idle');
+  document.getElementById('playBtn').disabled = false;
+  document.getElementById('analyzeBtn').disabled = false;
+}
+
+async function runAgent() {
+  const song = currentSongFile;
+  if (!song) return;
+  document.getElementById('analyzeBtn').disabled = true;
+  setStatus('Running CNN + AI agent...','thinking');
+
+  try {
+    const res = await fetch('/analyze', {
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body: JSON.stringify({current_song: song, played_songs: playedSongs})
+    });
+    agentResult = await res.json();
+
+    const nextSong = agentResult.recommended_next_song;
+    document.getElementById('nextName').textContent = nextSong.replace('.mp3','').replace(/_/g,' ');
+    document.getElementById('nextMeta').textContent = agentResult.reason_for_recommendation;
+    document.getElementById('nextCutIn').textContent = toMMSS(agentResult.transition_in.time_sec);
+    document.getElementById('nextSection').textContent = agentResult.transition_in.section;
+    renderStructure('nowStructure', agentResult.current_structure||[]);
+    renderStructure('nextStructure', agentResult.next_structure||[]);
+    document.getElementById('reasoningText').textContent = agentResult.overall_reasoning;
+    document.getElementById('upNextCard').classList.remove('hidden');
+    document.getElementById('reasoningDiv').classList.remove('hidden');
+    document.getElementById('skipNextBtn').disabled = false;
+
+    const tOut = agentResult.transition_out.time_sec;
+    const pct = (tOut/currentSongDuration)*100;
+    const marker = document.getElementById('transitionMarker');
+    marker.style.left = pct+'%';
+    marker.classList.remove('hidden');
+
+    setStatus('Preloading next song...','thinking');
+    nextBuffer = await fetchAudio(nextSong);
+    transitionScheduled = false;
+    setStatus('Ready — will auto-transition at '+toMMSS(tOut),'idle');
+  } catch(e) {
+    setStatus('Error: '+e.message,'idle');
+  }
+  document.getElementById('analyzeBtn').disabled = false;
+}
+
+function showToast(msg) {
+  const t = document.createElement('div');
+  t.className = 'crossfade-overlay';
+  t.textContent = msg;
+  document.body.appendChild(t);
+  setTimeout(()=>t.remove(), 3000);
+}
+
+loadSongs();
+</script>
+</body>
+</html>
