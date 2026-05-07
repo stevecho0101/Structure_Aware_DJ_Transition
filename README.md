@@ -152,7 +152,7 @@ pip install anthropic flask
 
 Set your Anthropic API key in `agent.py` and `app.py`:
 ```python
-client = anthropic.Anthropic(api_key="your_key_here")
+client = anthropic.Anthropic(api_key="your_key_here") (ask Anthony for API Key)
 ```
 
 Create the song samples folder and add a few mp3s:
@@ -161,7 +161,7 @@ mkdir song_samples
 ```
 Drop any mp3 files into `song_samples/` — they will automatically show up in the UI and be used by the agent.
 
-> **Windows note:** If pydub can't find ffmpeg even after adding to PATH, add this to the top of `add_effect.py` and `app.py`:
+> **Windows note:** If pydub can't find ffmpeg even after adding to PATH, add this to the top of `add_effect.py` and `app.py` and `agent.py` (I had to do this):
 > ```python
 > import os
 > os.environ["PATH"] = r"C:\path\to\ffmpeg\bin" + ";" + os.environ.get("PATH", "")
