@@ -139,3 +139,44 @@ Output (T, 4) — per-second class probabilities
 - `salami_mp3s/` and `harmonix_mp3s/` are not in the repo. Run the download scripts to generate them.
 - `cnn_lstm_best.pt` and `cnn_lstm_stats.npz` must be in the same folder as `train_cnn_lstm.py` for inference to work.
 - Val accuracy: ~52% on combined SALAMI + Harmonix dataset. Works best on songs with acoustically distinct sections (e.g. songs where chorus hits noticeably harder than verse).
+
+---
+
+---
+
+## AI Agent
+
+`agent.py` takes the CNN's predicted labels and uses the Claude API to select the optimal transition point and recommend the best next song based on energy continuity. Tracks played songs so it won't repeat until all songs have been played.
+
+Install additional dependencies:
+```bash
+pip install anthropic flask
+```
+
+Set your Anthropic API key in `agent.py` and `app.py`:
+```python
+client = anthropic.Anthropic(api_key="your_key_here")
+```
+
+> **Windows note:** If pydub can't find ffmpeg even after adding to PATH, add this to the top of `add_effect.py` and `app.py`:
+> ```python
+> import os
+> os.environ["PATH"] = r"C:\path\to\ffmpeg\bin" + ";" + os.environ.get("PATH", "")
+> ```
+
+Run the agent directly:
+```bash
+python agent.py
+```
+
+---
+
+## Live UI
+
+Browser-based live player — pick a song, hit Analyze, and it automatically crossfades into the recommended next song at the right timestamp.
+
+```bash
+python app.py
+```
+
+Open `http://localhost:5000`. Drop any mp3 into `song_samples/` and it shows up in the UI automatically.
