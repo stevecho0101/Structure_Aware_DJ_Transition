@@ -88,10 +88,10 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
   <div class="controls-row">
     <button class="btn btn-skip" onclick="seekBy(-10)">⏪ -10s</button>
     <button class="btn btn-skip" onclick="seekBy(-5)">◀ -5s</button>
+    <button class="btn btn-skip" id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
     <button class="btn btn-skip" onclick="seekBy(5)">+5s ▶</button>
     <button class="btn btn-skip" onclick="seekBy(10)">+10s ⏩</button>
     <button class="btn btn-next" id="skipNextBtn" onclick="skipToNext()" disabled>Skip to next song ⏭</button>
-    <button class="btn btn-skip" id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
   </div>
   <div class="structure" id="nowStructure"></div>
 </div>
