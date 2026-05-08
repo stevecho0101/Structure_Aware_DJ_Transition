@@ -16,8 +16,6 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
 .btn:disabled { opacity: 0.4; cursor: not-allowed; }
 .btn-play { background: #1db954; color: #fff; min-width: 80px; }
 .btn-play:hover:not(:disabled) { background: #1aa34a; }
-.btn-analyze { background: #f0f0f0; color: #0d0d0d; }
-.btn-analyze:hover:not(:disabled) { background: #d0d0d0; }
 .btn-skip { background: #222; color: #f0f0f0; border: 1px solid #333; padding: 10px 14px; font-size: 13px; }
 .btn-skip:hover:not(:disabled) { background: #2a2a2a; }
 .btn-next { background: #f59e0b; color: #000; font-weight: 600; }
@@ -43,9 +41,20 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
 .pill.active { outline: 2px solid #fff; outline-offset: 1px; }
 .cut-info { font-size: 12px; color: #666; }
 .cut-info span { color: #f5c842; font-weight: 500; }
-.reasoning { background: #111; border: 1px solid #222; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1.5rem; }
+.reasoning { background: #111; border: 1px solid #222; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
 .reasoning-label { font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
 .reasoning-text { font-size: 13px; color: #888; line-height: 1.7; }
+.feedback-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+.feedback-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+.stars { display: flex; gap: 8px; margin-bottom: 12px; }
+.star { font-size: 24px; cursor: pointer; transition: transform 0.1s; opacity: 0.3; }
+.star:hover, .star.active { opacity: 1; transform: scale(1.2); }
+.feedback-input { width: 100%; background: #111; border: 1px solid #333; border-radius: 8px; padding: 10px 14px; color: #f0f0f0; font-size: 13px; outline: none; margin-bottom: 10px; resize: none; }
+.feedback-row { display: flex; gap: 8px; }
+.btn-accept { background: #1db954; color: #fff; flex: 1; }
+.btn-accept:hover { background: #1aa34a; }
+.btn-retry { background: #333; color: #f0f0f0; flex: 1; border: 1px solid #444; }
+.btn-retry:hover { background: #3a3a3a; }
 .played-list { font-size: 12px; color: #555; margin-top: 0.5rem; }
 .status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; margin-top: 1rem; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #1db954; }
@@ -69,7 +78,6 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
 <div class="select-row">
   <select id="songSelect"><option value="">Select a song to play...</option></select>
   <button class="btn btn-play" id="playBtn" onclick="startPlayback()">▶ Play</button>
-  <button class="btn btn-analyze" id="analyzeBtn" onclick="runAgent()" disabled>Analyze next</button>
 </div>
 
 <div id="nowPlayingCard" class="player-card hidden">
@@ -91,7 +99,7 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
     <button class="btn btn-skip" id="pauseBtn" onclick="togglePause()">⏸ Pause</button>
     <button class="btn btn-skip" onclick="seekBy(5)">+5s ▶</button>
     <button class="btn btn-skip" onclick="seekBy(10)">+10s ⏩</button>
-    <button class="btn btn-next" id="skipNextBtn" onclick="skipToNext()" disabled>Skip to next song ⏭</button>
+    <button class="btn btn-next" id="skipNextBtn" onclick="skipToNext()" disabled>Skip to next ⏭</button>
   </div>
   <div class="structure" id="nowStructure"></div>
 </div>
@@ -109,6 +117,22 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
   <div class="reasoning-text" id="reasoningText">—</div>
 </div>
 
+<div id="feedbackCard" class="feedback-card hidden">
+  <div class="feedback-label">Rate this recommendation</div>
+  <div class="stars" id="stars">
+    <span class="star" onclick="setRating(1)">★</span>
+    <span class="star" onclick="setRating(2)">★</span>
+    <span class="star" onclick="setRating(3)">★</span>
+    <span class="star" onclick="setRating(4)">★</span>
+    <span class="star" onclick="setRating(5)">★</span>
+  </div>
+  <textarea class="feedback-input" id="feedbackComment" rows="2" placeholder="Any specific feedback? (optional)"></textarea>
+  <div class="feedback-row">
+    <button class="btn btn-retry" onclick="retryWithFeedback()">↺ Try different</button>
+    <button class="btn btn-accept" onclick="acceptTransition()">✓ Accept & queue</button>
+  </div>
+</div>
+
 <div class="status">
   <div class="dot idle" id="statusDot"></div>
   <span id="statusText">Select a song to start</span>
@@ -124,14 +148,16 @@ let nextBuffer = null;
 let startTime = 0;
 let seekOffset = 0;
 let isPlaying = false;
+let isPaused = false;
 let agentResult = null;
 let transitionScheduled = false;
 let progressInterval = null;
 let currentSongDuration = 0;
 let currentSongFile = null;
 let playedSongs = [];
-let isPaused = false;
-let pausedAt = 0;
+let sessionId = Math.random().toString(36).slice(2);
+let currentRating = 0;
+let transitionAccepted = false;
 
 async function loadSongs() {
   const res = await fetch('/songs');
@@ -168,6 +194,11 @@ function updatePlayedList() {
   el.textContent = 'Already played: ' + playedSongs.map(s => s.replace('.mp3','').replace(/_/g,' ')).join(', ');
 }
 
+function setRating(r) {
+  currentRating = r;
+  document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < r));
+}
+
 async function fetchAudio(filename) {
   if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
   const res = await fetch('/song_samples/'+filename);
@@ -202,16 +233,26 @@ function playFrom(offset) {
   transitionScheduled = false;
 }
 
-function seekBy(seconds) {
-  if (!isPlaying) return;
-  playFrom(getElapsed()+seconds);
-}
+function seekBy(seconds) { if (!isPlaying) return; playFrom(getElapsed()+seconds); }
 
 function seekClick(e) {
   if (!isPlaying) return;
   const rect = document.getElementById('progressWrap').getBoundingClientRect();
-  const pct = (e.clientX-rect.left)/rect.width;
-  playFrom(pct*currentSongDuration);
+  playFrom(((e.clientX-rect.left)/rect.width)*currentSongDuration);
+}
+
+function togglePause() {
+  if (!isPlaying) return;
+  const btn = document.getElementById('pauseBtn');
+  if (!isPaused) {
+    audioCtx.suspend();
+    isPaused = true;
+    btn.textContent = '▶ Resume';
+  } else {
+    audioCtx.resume();
+    isPaused = false;
+    btn.textContent = '⏸ Pause';
+  }
 }
 
 function skipToNext() {
@@ -227,7 +268,7 @@ function updateProgress() {
   document.getElementById('progressFill').style.width = pct+'%';
   document.getElementById('currentTime').textContent = toMMSS(elapsed);
 
-  if (agentResult) {
+  if (agentResult && transitionAccepted) {
     const tOut = agentResult.transition_out.time_sec;
     const remaining = tOut-elapsed;
     if (remaining>0&&remaining<30) {
@@ -251,21 +292,6 @@ function updateProgress() {
       setTimeout(doLiveCrossfade, remaining*1000);
       showToast('🎚️ Crossfading in '+Math.ceil(remaining)+'s...');
     }
-  }
-}
-
-function togglePause() {
-  if (!isPlaying) return;
-  const btn = document.getElementById('pauseBtn');
-  if (!isPaused) {
-    pausedAt = getElapsed();
-    audioCtx.suspend();
-    isPaused = true;
-    btn.textContent = '▶ Resume';
-  } else {
-    audioCtx.resume();
-    isPaused = false;
-    btn.textContent = '⏸ Pause';
   }
 }
 
@@ -303,18 +329,27 @@ async function doLiveCrossfade() {
   currentSongDuration = nextBuffer.duration;
   seekOffset = tIn;
   startTime = audioCtx.currentTime;
+
   agentResult = null;
   transitionScheduled = false;
+  transitionAccepted = false;
   nextBuffer = null;
+  currentRating = 0;
+  sessionId = Math.random().toString(36).slice(2);
 
   document.getElementById('upNextCard').classList.add('hidden');
   document.getElementById('reasoningDiv').classList.add('hidden');
+  document.getElementById('feedbackCard').classList.add('hidden');
   document.getElementById('transitionMarker').classList.add('hidden');
   document.getElementById('totalTime').textContent = toMMSS(currentSongDuration);
   document.getElementById('transitionHint').textContent = '';
   document.getElementById('skipNextBtn').disabled = true;
-  setStatus('Playing '+nextSongName,'idle');
-  document.getElementById('analyzeBtn').disabled = false;
+  document.getElementById('pauseBtn').textContent = '⏸ Pause';
+  isPaused = false;
+  setStatus('Playing '+nextSongName+' — finding next song...','thinking');
+
+  // auto-run agent for new song
+  setTimeout(runAgent, 500);
 }
 
 async function startPlayback() {
@@ -325,8 +360,11 @@ async function startPlayback() {
   audioCtx = new (window.AudioContext||window.webkitAudioContext)();
   agentResult = null;
   transitionScheduled = false;
+  transitionAccepted = false;
   seekOffset = 0;
+  isPaused = false;
   playedSongs = [song];
+  sessionId = Math.random().toString(36).slice(2);
   updatePlayedList();
 
   setStatus('Loading audio...','thinking');
@@ -350,28 +388,31 @@ async function startPlayback() {
   document.getElementById('nowPlayingCard').classList.remove('hidden');
   document.getElementById('totalTime').textContent = toMMSS(currentSongDuration);
   document.getElementById('nowStructure').innerHTML = '';
+  document.getElementById('pauseBtn').textContent = '⏸ Pause';
 
   clearInterval(progressInterval);
   progressInterval = setInterval(updateProgress, 500);
 
-  setStatus('Playing — click Analyze next to get transition recommendation','idle');
+  setStatus('Finding next song...','thinking');
   document.getElementById('playBtn').disabled = false;
-  document.getElementById('analyzeBtn').disabled = false;
+
+  // auto-run agent immediately
+  setTimeout(runAgent, 500);
 }
 
 async function runAgent() {
   const song = currentSongFile;
   if (!song) return;
-  document.getElementById('analyzeBtn').disabled = true;
-  setStatus('Running CNN + AI agent...','thinking');
+  setStatus('Agent analyzing...','thinking');
 
   try {
-    const res = await fetch('/analyze', {
+    const res = await fetch('/analyze_with_feedback', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({current_song: song, played_songs: playedSongs})
+      body: JSON.stringify({current_song: song, played_songs: playedSongs, session_id: sessionId})
     });
     agentResult = await res.json();
+    transitionAccepted = false;
 
     const nextSong = agentResult.recommended_next_song;
     document.getElementById('nextName').textContent = nextSong.replace('.mp3','').replace(/_/g,' ');
@@ -383,22 +424,84 @@ async function runAgent() {
     document.getElementById('reasoningText').textContent = agentResult.overall_reasoning;
     document.getElementById('upNextCard').classList.remove('hidden');
     document.getElementById('reasoningDiv').classList.remove('hidden');
-    document.getElementById('skipNextBtn').disabled = false;
+    document.getElementById('feedbackCard').classList.remove('hidden');
+
+    // reset stars
+    currentRating = 0;
+    document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
+    document.getElementById('feedbackComment').value = '';
+
+    setStatus('Recommendation ready — accept or give feedback','idle');
+
+    // preload next song in background
+    nextBuffer = await fetchAudio(nextSong);
 
     const tOut = agentResult.transition_out.time_sec;
-    const pct = (tOut/currentSongDuration)*100;
     const marker = document.getElementById('transitionMarker');
-    marker.style.left = pct+'%';
-    marker.classList.remove('hidden');
+    marker.style.left = (tOut/currentSongDuration)*100+'%';
+    marker.classList.add('hidden'); // only show marker after accepted
 
-    setStatus('Preloading next song...','thinking');
-    nextBuffer = await fetchAudio(nextSong);
-    transitionScheduled = false;
-    setStatus('Ready — will auto-transition at '+toMMSS(tOut),'idle');
   } catch(e) {
     setStatus('Error: '+e.message,'idle');
   }
-  document.getElementById('analyzeBtn').disabled = false;
+}
+
+async function acceptTransition() {
+  if (!agentResult) return;
+  transitionAccepted = true;
+
+  await fetch('/feedback', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      session_id: sessionId,
+      song: agentResult.recommended_next_song,
+      transition_out: agentResult.transition_out.time_sec,
+      transition_in: agentResult.transition_in.time_sec,
+      rating: currentRating || 5,
+      comment: document.getElementById('feedbackComment').value
+    })
+  });
+
+  document.getElementById('feedbackCard').classList.add('hidden');
+  document.getElementById('skipNextBtn').disabled = false;
+
+  const tOut = agentResult.transition_out.time_sec;
+  const marker = document.getElementById('transitionMarker');
+  marker.style.left = (tOut/currentSongDuration)*100+'%';
+  marker.classList.remove('hidden');
+
+  setStatus('Queued — will auto-transition at '+toMMSS(tOut),'idle');
+}
+
+async function retryWithFeedback() {
+  if (!agentResult) return;
+  const comment = document.getElementById('feedbackComment').value;
+  const rating = currentRating || 2;
+
+  await fetch('/feedback', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({
+      session_id: sessionId,
+      song: agentResult.recommended_next_song,
+      transition_out: agentResult.transition_out.time_sec,
+      transition_in: agentResult.transition_in.time_sec,
+      rating: rating,
+      comment: comment
+    })
+  });
+
+  agentResult = null;
+  nextBuffer = null;
+  transitionAccepted = false;
+  document.getElementById('upNextCard').classList.add('hidden');
+  document.getElementById('reasoningDiv').classList.add('hidden');
+  document.getElementById('feedbackCard').classList.add('hidden');
+  document.getElementById('transitionMarker').classList.add('hidden');
+  document.getElementById('skipNextBtn').disabled = true;
+
+  await runAgent();
 }
 
 function showToast(msg) {
