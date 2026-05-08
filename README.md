@@ -176,7 +176,7 @@ python agent.py
 ---
 
 ## Live UI
-Browser-based live player — pick a song, hit Analyze, and it automatically crossfades into the recommended next song at the right timestamp.
+Browser-based live player — pick a song, hit Analyze, and it automatically crossfades into the recommended next song at the right timestamp. Added a feature to rate and give feedback to the agent for it to try and give another transition selection.
 
 ```
 python app.py
