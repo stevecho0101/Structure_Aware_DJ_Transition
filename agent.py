@@ -19,9 +19,17 @@ def summarize_song(labels):
             prev = lbl
     return sections
 
-def run_agent(current_song_name, current_labels, candidate_songs):
+def run_agent(current_song_name, current_labels, candidate_songs, feedback_history=[]):
     current_summary = summarize_song(current_labels)
     candidates_info = {name: summarize_song(labels) for name, labels in candidate_songs.items()}
+
+    # build feedback context from previous attempts
+    feedback_str = ""
+    if feedback_history:
+        feedback_str = "\n\nPREVIOUS ATTEMPTS AND FEEDBACK:\n"
+        for i, f in enumerate(feedback_history):
+            feedback_str += f"Attempt {i+1}: recommended {f['song']} at {f['transition_out']}s → {f['transition_in']}s. User feedback: {f['feedback']}\n"
+        feedback_str += "\nUse this feedback to pick a different song or different transition points this time.\n"
 
     prompt = f"""You are an expert DJ assistant. A DJ is currently playing a song and needs to know which song to transition to next.
 
@@ -30,12 +38,13 @@ CURRENT SONG ({current_song_name}):
 
 CANDIDATE SONGS TO TRANSITION TO:
 {json.dumps(candidates_info, indent=2)}
-
+{feedback_str}
 Rules:
 - Pick the ONE best candidate song to transition to next
 - Choose a transition OUT point from the current song (end of chorus or verse)
 - Choose a transition IN point for the next song (start of verse or chorus)
 - Prioritize energy continuity, no big energy drops
+- If previous attempts had bad feedback, try a completely different song or different section types
 
 Respond ONLY with this JSON format, no extra text:
 {{
@@ -46,7 +55,7 @@ Respond ONLY with this JSON format, no extra text:
   "overall_reasoning": "<2 sentences>"
 }}"""
 
-    client = anthropic.Anthropic(api_key="your_key_here")
+    client = anthropic.Anthropic(api_key="your_key_here") #insert API Key
     response = client.messages.create(
         model="claude-opus-4-5",
         max_tokens=1024,
@@ -73,18 +82,46 @@ print(f"Now playing: {current_song}")
 
 candidates = {k: v for k, v in all_songs.items() if k != current_song}
 
-result = run_agent(current_song, current_labels, candidates)
-print(json.dumps(result, indent=2))
+# feedback loop
+feedback_history = []
+while True:
+    result = run_agent(current_song, current_labels, candidates, feedback_history)
+    print(json.dumps(result, indent=2))
 
-next_song = result["recommended_next_song"]
-song1_out = result["transition_out"]["time_sec"]
-song2_in  = result["transition_in"]["time_sec"]
+    next_song = result["recommended_next_song"]
+    song1_out = result["transition_out"]["time_sec"]
+    song2_in  = result["transition_in"]["time_sec"]
 
-print(f"\nTransitioning: {current_song} → {next_song}")
-print(f"Cut at {song1_out}s → enter at {song2_in}s")
+    print(f"\nTransitioning: {current_song} → {next_song}")
+    print(f"Cut at {song1_out}s → enter at {song2_in}s")
 
-transition(
-    os.path.join(SAMPLES_DIR, current_song), song1_out,
-    os.path.join(SAMPLES_DIR, next_song), song2_in,
-    "output_mix.mp3"
-)
+    # ask for feedback
+    print("\nRate this transition:")
+    print("  [enter] accept and mix")
+    print("  [1-5]   rate it (1=terrible, 5=perfect) and try again")
+    print("  [q]     quit")
+    rating = input("Your rating: ").strip().lower()
+
+    if rating == "" or rating == "5":
+        # accepted — do the mix
+        transition(
+            os.path.join(SAMPLES_DIR, current_song), song1_out,
+            os.path.join(SAMPLES_DIR, next_song), song2_in,
+            "output_mix.mp3"
+        )
+        print("Mix saved to output_mix.mp3")
+        break
+    elif rating == "q":
+        print("Cancelled.")
+        break
+    else:
+        # get optional written feedback
+        comment = input("Any specific feedback? (or press enter to skip): ").strip()
+        feedback_text = f"rating {rating}/5" + (f" — {comment}" if comment else "")
+        feedback_history.append({
+            "song": next_song,
+            "transition_out": song1_out,
+            "transition_in": song2_in,
+            "feedback": feedback_text
+        })
+        print("\nTrying again with your feedback...\n")
