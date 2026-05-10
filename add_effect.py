@@ -1,3 +1,14 @@
+'''
+generates transitions between two mp3 files at specific time stamps
+called by agent.py and chooses between one of four transitions:
+    crossfade
+    EQ sweep
+    beatmatch
+    LPF sweep
+can also be called manually with:
+    python add_effect.py <song1>.mp3 <exit timestamp> <song2>.mp3 <entry timestamp> <output filename>.mp3 <transition type>
+'''
+
 import sys
 import argparse
 import numpy as np
