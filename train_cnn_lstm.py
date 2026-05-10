@@ -33,7 +33,7 @@
 #   BiLSTM  — captures long-range structure dependencies across the full song
 
 # AI Usage:
-# We prompted to Clauder to provide a starting block to test different implementations. We asked to help add LSTM because it was one of the alternative strategies we mentioned in the proposal.
+# We prompted to Claude to provide a starting block to test different implementations. We also asked to help add LSTM because it was one of the alternative strategies we mentioned in the proposal.
 # Claude also helped with syntax and with writing the script efficiently, as incorrect logic could lead to longer runtime/training.
 
 import os
