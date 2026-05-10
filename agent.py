@@ -1,3 +1,10 @@
+'''
+- given a user-selected song, will pick the best choice from the user's pool of songs and use Claude to decide the best transition type and time
+- from train_cnn_lstm.py, the agent recieves the predicted section labels which are stored in a json to avoid unnecessary repeated inference
+- Claude takes the json and returns a json that includes which song to play, exit and entry timestamps for the two songs, the transition type, and the reasoning
+- Agent has a recent song cooldown, takes feedback from the user, and can be forced to choose certain transition types
+- ran by agent.py
+'''
 import os
 import anthropic
 import json
@@ -76,8 +83,8 @@ def run_agent(current_song_name, current_labels, all_songs,
 
 TRANSITION EFFECT SELECTION — pick the best one:
 - 'lpf_sweep'  : high-energy EDM/electronic; dramatic build-to-drop feel
-- 'eq_sweep'   : hip-hop, funk, R&B where bass line matters
-- 'beatmatch'  : when both songs have steady groove and BPM continuity matters
+- 'eq_sweep'   : hip-hop, funk, R&B where or other genres where bass line matters
+- 'beatmatch'  : when both songs have steady rhythm and BPM continuity matters, maintaining the flow of the set
 - 'crossfade'  : safe default for mismatched genres or low-energy sections"""
 
     prompt = f"""You are an expert DJ assistant. A DJ is currently playing a song and needs to know which song to transition to next.
