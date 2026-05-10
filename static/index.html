@@ -10,6 +10,7 @@ body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif; b
 .logo { width: 40px; height: 40px; background: #f0f0f0; border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 20px; }
 .app-title { font-size: 20px; font-weight: 600; }
 .app-sub { font-size: 13px; color: #888; margin-top: 2px; }
+.search-input { width: 100%; background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-radius: 8px; padding: 10px 14px; font-size: 14px; outline: none; margin-bottom: 8px; }
 .select-row { display: flex; gap: 10px; margin-bottom: 1.5rem; align-items: center; }
 select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-radius: 8px; padding: 10px 14px; font-size: 14px; flex: 1; outline: none; }
 .btn { padding: 10px 20px; border-radius: 8px; font-size: 14px; font-weight: 500; cursor: pointer; border: none; transition: all 0.15s; }
@@ -20,6 +21,8 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
 .btn-skip:hover:not(:disabled) { background: #2a2a2a; }
 .btn-next { background: #f59e0b; color: #000; font-weight: 600; }
 .btn-next:hover:not(:disabled) { background: #d97706; }
+.btn-accept { background: #1db954; color: #fff; flex: 1; }
+.btn-accept:hover { background: #1aa34a; }
 .player-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
 .player-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 10px; display: flex; justify-content: space-between; align-items: center; }
 .live-badge { background: #1db954; color: #fff; font-size: 10px; padding: 2px 8px; border-radius: 20px; animation: pulse 2s infinite; }
@@ -39,23 +42,27 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
 .pill-chorus { background: #3a2a00; color: #f5c842; }
 .pill-outro { background: #2a1a3a; color: #b07ef7; }
 .pill.active { outline: 2px solid #fff; outline-offset: 1px; }
-.cut-info { font-size: 12px; color: #666; }
+.cut-info { font-size: 12px; color: #666; margin-bottom: 8px; }
 .cut-info span { color: #f5c842; font-weight: 500; }
-.reasoning { background: #111; border: 1px solid #222; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 1rem; }
+.effect-label { font-size: 11px; color: #666; margin-bottom: 6px; }
+.effect-row { display: flex; gap: 6px; margin-bottom: 8px; flex-wrap: wrap; }
+.effect-btn { padding: 6px 12px; border-radius: 20px; font-size: 12px; font-weight: 500; cursor: pointer; border: 1px solid #333; background: #222; color: #888; transition: all 0.15s; }
+.effect-btn.active { background: #f59e0b; color: #000; border-color: #f59e0b; }
+.effect-btn:hover:not(.active) { background: #2a2a2a; color: #f0f0f0; }
+.effect-reason { font-size: 12px; color: #888; font-style: italic; margin-bottom: 12px; }
+.reasoning { background: #111; border: 1px solid #222; border-radius: 10px; padding: 1rem 1.25rem; margin-bottom: 12px; }
 .reasoning-label { font-size: 11px; font-weight: 600; color: #666; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
 .reasoning-text { font-size: 13px; color: #888; line-height: 1.7; }
-.feedback-card { background: #1a1a1a; border: 1px solid #2a2a2a; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
-.feedback-label { font-size: 11px; font-weight: 600; color: #888; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 12px; }
+.accept-row { display: flex; gap: 8px; }
+.feedback-card { background: #1a1a1a; border: 1px solid #f59e0b55; border-radius: 12px; padding: 1.25rem; margin-bottom: 1rem; }
+.feedback-label { font-size: 11px; font-weight: 600; color: #f59e0b; text-transform: uppercase; letter-spacing: 0.08em; margin-bottom: 6px; }
+.feedback-sub { font-size: 12px; color: #666; margin-bottom: 12px; }
 .stars { display: flex; gap: 8px; margin-bottom: 12px; }
 .star { font-size: 24px; cursor: pointer; transition: transform 0.1s; opacity: 0.3; }
 .star:hover, .star.active { opacity: 1; transform: scale(1.2); }
 .feedback-input { width: 100%; background: #111; border: 1px solid #333; border-radius: 8px; padding: 10px 14px; color: #f0f0f0; font-size: 13px; outline: none; margin-bottom: 10px; resize: none; }
-.feedback-row { display: flex; gap: 8px; }
-.btn-accept { background: #1db954; color: #fff; flex: 1; }
-.btn-accept:hover { background: #1aa34a; }
-.btn-retry { background: #333; color: #f0f0f0; flex: 1; border: 1px solid #444; }
-.btn-retry:hover { background: #3a3a3a; }
-.played-list { font-size: 12px; color: #555; margin-top: 0.5rem; }
+.btn-submit-feedback { background: #f59e0b; color: #000; font-weight: 600; width: 100%; }
+.btn-submit-feedback:hover { background: #d97706; }
 .status { display: flex; align-items: center; gap: 8px; font-size: 12px; color: #666; margin-top: 1rem; }
 .dot { width: 7px; height: 7px; border-radius: 50%; background: #1db954; }
 .dot.thinking { background: #f59e0b; animation: pulse 0.8s infinite; }
@@ -74,6 +81,8 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
     <div class="app-sub">Live DJ transition assistant</div>
   </div>
 </div>
+
+<input class="search-input" id="searchInput" oninput="filterSongs()" placeholder="Search songs...">
 
 <div class="select-row">
   <select id="songSelect"><option value="">Select a song to play...</option></select>
@@ -110,34 +119,42 @@ select { background: #1a1a1a; color: #f0f0f0; border: 1px solid #333; border-rad
   <div class="song-meta" id="nextMeta">—</div>
   <div class="structure" id="nextStructure"></div>
   <div class="cut-info">Entering at <span id="nextCutIn">—</span> — <span id="nextSection">—</span></div>
-</div>
-
-<div id="reasoningDiv" class="reasoning hidden">
-  <div class="reasoning-label">✦ Agent reasoning</div>
-  <div class="reasoning-text" id="reasoningText">—</div>
+  <div class="effect-label">Transition effect</div>
+  <div class="effect-row">
+    <button class="effect-btn" onclick="setEffect('auto',this)">✦ Auto</button>
+    <button class="effect-btn" onclick="setEffect('crossfade',this)">Crossfade</button>
+    <button class="effect-btn" onclick="setEffect('eq_sweep',this)">EQ Sweep</button>
+    <button class="effect-btn" onclick="setEffect('lpf_sweep',this)">LPF Sweep</button>
+    <button class="effect-btn" onclick="setEffect('beatmatch',this)">Beatmatch</button>
+  </div>
+  <div class="effect-reason" id="effectReason">—</div>
+  <div class="reasoning">
+    <div class="reasoning-label">✦ Agent reasoning</div>
+    <div class="reasoning-text" id="reasoningText">—</div>
+  </div>
+  <div class="accept-row">
+    <button class="btn btn-accept" id="acceptBtn" onclick="acceptTransition()" disabled>✓ Accept & queue</button>
+  </div>
 </div>
 
 <div id="feedbackCard" class="feedback-card hidden">
-  <div class="feedback-label">Rate this recommendation</div>
-  <div class="stars" id="stars">
+  <div class="feedback-label">How was that transition?</div>
+  <div class="feedback-sub">Rate what you just heard — helps the agent pick better next time</div>
+  <div class="stars">
     <span class="star" onclick="setRating(1)">★</span>
     <span class="star" onclick="setRating(2)">★</span>
     <span class="star" onclick="setRating(3)">★</span>
     <span class="star" onclick="setRating(4)">★</span>
     <span class="star" onclick="setRating(5)">★</span>
   </div>
-  <textarea class="feedback-input" id="feedbackComment" rows="2" placeholder="Any specific feedback? (optional)"></textarea>
-  <div class="feedback-row">
-    <button class="btn btn-retry" onclick="retryWithFeedback()">↺ Try different</button>
-    <button class="btn btn-accept" onclick="acceptTransition()">✓ Accept & queue</button>
-  </div>
+  <textarea class="feedback-input" id="feedbackComment" rows="2" placeholder="Any comments? e.g. too abrupt, wrong vibe, energy drop (optional)"></textarea>
+  <button class="btn btn-submit-feedback" onclick="submitFeedback()">Submit feedback</button>
 </div>
 
 <div class="status">
   <div class="dot idle" id="statusDot"></div>
   <span id="statusText">Select a song to start</span>
 </div>
-<div class="played-list" id="playedList"></div>
 
 <script>
 let audioCtx = null;
@@ -154,17 +171,23 @@ let transitionScheduled = false;
 let progressInterval = null;
 let currentSongDuration = 0;
 let currentSongFile = null;
-let playedSongs = [];
 let sessionId = Math.random().toString(36).slice(2);
 let currentRating = 0;
-let transitionAccepted = false;
+let lastTransitionSong = null;
+let allSongs = [];
+let forcedMode = null;
 
 async function loadSongs() {
   const res = await fetch('/songs');
   const data = await res.json();
+  allSongs = data.songs;
+  renderSongs(allSongs);
+}
+
+function renderSongs(songs) {
   const sel = document.getElementById('songSelect');
   sel.innerHTML = '<option value="">Select a song to play...</option>';
-  data.songs.forEach(s => {
+  songs.forEach(s => {
     const opt = document.createElement('option');
     opt.value = s;
     opt.textContent = s.replace('.mp3','').replace(/_/g,' ');
@@ -172,9 +195,22 @@ async function loadSongs() {
   });
 }
 
+function filterSongs() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  renderSongs(allSongs.filter(s => s.replace(/_/g,' ').toLowerCase().includes(q)));
+}
+
+function setEffect(mode, btn) {
+  forcedMode = mode === 'auto' ? null : mode;
+  document.querySelectorAll('.effect-btn').forEach(b => b.classList.remove('active'));
+  btn.classList.add('active');
+  document.getElementById('effectReason').textContent = forcedMode
+    ? `Effect locked to: ${forcedMode}`
+    : (agentResult ? agentResult.effect_reason : '—');
+}
+
 function toMMSS(sec) {
-  const m = Math.floor(sec/60);
-  const s = Math.floor(sec%60);
+  const m = Math.floor(sec/60), s = Math.floor(sec%60);
   return m+':'+s.toString().padStart(2,'0');
 }
 
@@ -188,15 +224,9 @@ function getElapsed() {
   return audioCtx.currentTime - startTime + seekOffset;
 }
 
-function updatePlayedList() {
-  const el = document.getElementById('playedList');
-  if (playedSongs.length === 0) { el.textContent = ''; return; }
-  el.textContent = 'Already played: ' + playedSongs.map(s => s.replace('.mp3','').replace(/_/g,' ')).join(', ');
-}
-
 function setRating(r) {
   currentRating = r;
-  document.querySelectorAll('.star').forEach((s, i) => s.classList.toggle('active', i < r));
+  document.querySelectorAll('.star').forEach((s,i) => s.classList.toggle('active', i<r));
 }
 
 async function fetchAudio(filename) {
@@ -218,66 +248,51 @@ function renderStructure(id, sections) {
   });
 }
 
-function playFrom(offset) {
-  if (!currentBuffer||!audioCtx) return;
+function rebuildCurrentSource(offset) {
   if (currentSource) { try { currentSource.stop(); } catch(e){} }
   currentSource = audioCtx.createBufferSource();
   currentSource.buffer = currentBuffer;
-  currentGain = audioCtx.createGain();
   currentSource.connect(currentGain);
-  currentGain.connect(audioCtx.destination);
-  const safeOffset = Math.max(0, Math.min(offset, currentSongDuration-0.1));
-  currentSource.start(0, safeOffset);
-  seekOffset = safeOffset;
+  const safe = Math.max(0, Math.min(offset, currentSongDuration-0.1));
+  currentSource.start(0, safe);
+  seekOffset = safe;
   startTime = audioCtx.currentTime;
   transitionScheduled = false;
 }
 
-function seekBy(seconds) { if (!isPlaying) return; playFrom(getElapsed()+seconds); }
+function seekBy(s) { if (isPlaying) rebuildCurrentSource(getElapsed()+s); }
 
 function seekClick(e) {
   if (!isPlaying) return;
   const rect = document.getElementById('progressWrap').getBoundingClientRect();
-  playFrom(((e.clientX-rect.left)/rect.width)*currentSongDuration);
+  rebuildCurrentSource(((e.clientX-rect.left)/rect.width)*currentSongDuration);
 }
 
 function togglePause() {
   if (!isPlaying) return;
   const btn = document.getElementById('pauseBtn');
-  if (!isPaused) {
-    audioCtx.suspend();
-    isPaused = true;
-    btn.textContent = '▶ Resume';
-  } else {
-    audioCtx.resume();
-    isPaused = false;
-    btn.textContent = '⏸ Pause';
-  }
+  if (!isPaused) { audioCtx.suspend(); isPaused=true; btn.textContent='▶ Resume'; }
+  else { audioCtx.resume(); isPaused=false; btn.textContent='⏸ Pause'; }
 }
 
 function skipToNext() {
   if (!agentResult||!nextBuffer) return;
   transitionScheduled = true;
-  doLiveCrossfade();
+  doLiveTransition();
 }
 
 function updateProgress() {
   if (!isPlaying||!audioCtx) return;
   const elapsed = getElapsed();
-  const pct = Math.min(100,(elapsed/currentSongDuration)*100);
-  document.getElementById('progressFill').style.width = pct+'%';
+  document.getElementById('progressFill').style.width = Math.min(100,(elapsed/currentSongDuration)*100)+'%';
   document.getElementById('currentTime').textContent = toMMSS(elapsed);
 
-  if (agentResult && transitionAccepted) {
+  if (agentResult&&agentResult._accepted) {
     const tOut = agentResult.transition_out.time_sec;
     const remaining = tOut-elapsed;
-    if (remaining>0&&remaining<30) {
-      document.getElementById('transitionHint').textContent = 'transition in '+Math.ceil(remaining)+'s';
-    } else if (remaining<=0) {
-      document.getElementById('transitionHint').textContent = 'transitioning...';
-    } else {
-      document.getElementById('transitionHint').textContent = 'transition at '+toMMSS(tOut);
-    }
+    if (remaining>0&&remaining<30) document.getElementById('transitionHint').textContent='transition in '+Math.ceil(remaining)+'s';
+    else if (remaining<=0) document.getElementById('transitionHint').textContent='transitioning...';
+    else document.getElementById('transitionHint').textContent='transition at '+toMMSS(tOut);
 
     const sections = agentResult.current_structure||[];
     let cur = sections[0];
@@ -289,66 +304,189 @@ function updateProgress() {
 
     if (!transitionScheduled&&remaining>0&&remaining<=5) {
       transitionScheduled = true;
-      setTimeout(doLiveCrossfade, remaining*1000);
-      showToast('🎚️ Crossfading in '+Math.ceil(remaining)+'s...');
+      setTimeout(doLiveTransition, remaining*1000);
+      showToast('🎚️ Transitioning in '+Math.ceil(remaining)+'s...');
     }
   }
 }
 
-async function doLiveCrossfade() {
+// ── Web Audio transition effects ──────────────────────────────────────────────
+
+function doLiveTransition() {
   if (!nextBuffer||!audioCtx) return;
-  showToast('🎛️ Transitioning now...');
-
-  const fadeTime = 4;
+  const mode = forcedMode || agentResult.transition_effect || 'crossfade';
+  const fadeDur = 4; // seconds
   const tIn = agentResult.transition_in.time_sec;
+  const now = audioCtx.currentTime;
 
-  currentGain.gain.setValueAtTime(1, audioCtx.currentTime);
-  currentGain.gain.linearRampToValueAtTime(0, audioCtx.currentTime+fadeTime);
+  showToast(`🎛️ ${mode}...`);
 
-  const newSource = audioCtx.createBufferSource();
-  newSource.buffer = nextBuffer;
-  const newGain = audioCtx.createGain();
-  newGain.gain.setValueAtTime(0, audioCtx.currentTime);
-  newGain.gain.linearRampToValueAtTime(1, audioCtx.currentTime+fadeTime);
-  newSource.connect(newGain);
-  newGain.connect(audioCtx.destination);
-  newSource.start(0, tIn);
+  if (mode === 'lpf_sweep') {
+    // song1 gets low-pass filter sweeping DOWN (muffling it out)
+    const lpf1 = audioCtx.createBiquadFilter();
+    lpf1.type = 'lowpass';
+    lpf1.frequency.setValueAtTime(20000, now);
+    lpf1.frequency.exponentialRampToValueAtTime(200, now + fadeDur);
+
+    if (currentSource) { try { currentSource.disconnect(); } catch(e){} }
+    if (currentGain) { try { currentGain.disconnect(); } catch(e){} }
+    currentGain = audioCtx.createGain();
+    currentGain.gain.setValueAtTime(1, now);
+    currentGain.gain.linearRampToValueAtTime(0, now + fadeDur);
+
+    // reconnect current through lpf
+    const newSrc1 = audioCtx.createBufferSource();
+    newSrc1.buffer = currentBuffer;
+    newSrc1.connect(lpf1);
+    lpf1.connect(currentGain);
+    currentGain.connect(audioCtx.destination);
+    newSrc1.start(0, getElapsed());
+    currentSource = newSrc1;
+
+    // song2 gets low-pass filter sweeping UP (opening up)
+    const lpf2 = audioCtx.createBiquadFilter();
+    lpf2.type = 'lowpass';
+    lpf2.frequency.setValueAtTime(200, now);
+    lpf2.frequency.exponentialRampToValueAtTime(20000, now + fadeDur);
+
+    const gain2 = audioCtx.createGain();
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.linearRampToValueAtTime(1, now + fadeDur);
+
+    const src2 = audioCtx.createBufferSource();
+    src2.buffer = nextBuffer;
+    src2.connect(lpf2);
+    lpf2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    src2.start(0, tIn);
+
+    setTimeout(() => finishTransition(src2, gain2), fadeDur * 1000);
+
+  } else if (mode === 'eq_sweep') {
+    // song1 gets high-pass filter sweeping UP (cutting bass out)
+    const hpf1 = audioCtx.createBiquadFilter();
+    hpf1.type = 'highpass';
+    hpf1.frequency.setValueAtTime(20, now);
+    hpf1.frequency.exponentialRampToValueAtTime(500, now + fadeDur);
+
+    if (currentSource) { try { currentSource.disconnect(); } catch(e){} }
+    if (currentGain) { try { currentGain.disconnect(); } catch(e){} }
+    currentGain = audioCtx.createGain();
+    currentGain.gain.setValueAtTime(1, now);
+    currentGain.gain.linearRampToValueAtTime(0, now + fadeDur);
+
+    const newSrc1 = audioCtx.createBufferSource();
+    newSrc1.buffer = currentBuffer;
+    newSrc1.connect(hpf1);
+    hpf1.connect(currentGain);
+    currentGain.connect(audioCtx.destination);
+    newSrc1.start(0, getElapsed());
+    currentSource = newSrc1;
+
+    // song2 gets high-pass filter sweeping DOWN (bass comes in)
+    const hpf2 = audioCtx.createBiquadFilter();
+    hpf2.type = 'highpass';
+    hpf2.frequency.setValueAtTime(500, now);
+    hpf2.frequency.exponentialRampToValueAtTime(20, now + fadeDur);
+
+    const gain2 = audioCtx.createGain();
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.linearRampToValueAtTime(1, now + fadeDur);
+
+    const src2 = audioCtx.createBufferSource();
+    src2.buffer = nextBuffer;
+    src2.connect(hpf2);
+    hpf2.connect(gain2);
+    gain2.connect(audioCtx.destination);
+    src2.start(0, tIn);
+
+    setTimeout(() => finishTransition(src2, gain2), fadeDur * 1000);
+
+  } else if (mode === 'beatmatch') {
+    // adjust playback rate of incoming song
+    const bpmRatio = (agentResult.bpm1||120) / (agentResult.bpm2||120);
+
+    currentGain.gain.setValueAtTime(1, now);
+    currentGain.gain.linearRampToValueAtTime(0, now + fadeDur);
+
+    const gain2 = audioCtx.createGain();
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.linearRampToValueAtTime(1, now + fadeDur);
+    gain2.connect(audioCtx.destination);
+
+    const src2 = audioCtx.createBufferSource();
+    src2.buffer = nextBuffer;
+    src2.playbackRate.value = bpmRatio;
+    src2.connect(gain2);
+    src2.start(0, tIn);
+
+    setTimeout(() => finishTransition(src2, gain2), fadeDur * 1000);
+
+  } else {
+    // crossfade — standard volume fade
+    currentGain.gain.setValueAtTime(1, now);
+    currentGain.gain.linearRampToValueAtTime(0, now + fadeDur);
+
+    const gain2 = audioCtx.createGain();
+    gain2.gain.setValueAtTime(0, now);
+    gain2.gain.linearRampToValueAtTime(1, now + fadeDur);
+    gain2.connect(audioCtx.destination);
+
+    const src2 = audioCtx.createBufferSource();
+    src2.buffer = nextBuffer;
+    src2.connect(gain2);
+    src2.start(0, tIn);
+
+    setTimeout(() => finishTransition(src2, gain2), fadeDur * 1000);
+  }
+}
+
+function finishTransition(newSource, newGain) {
+  // disconnect old source
+  try { currentSource.stop(); } catch(e){}
+  try { currentGain.disconnect(); } catch(e){}
 
   const nextSongName = agentResult.recommended_next_song.replace('.mp3','').replace(/_/g,' ');
-  playedSongs.push(currentSongFile);
-  updatePlayedList();
+  lastTransitionSong = agentResult.recommended_next_song;
 
-  document.getElementById('nowName').textContent = nextSongName;
-  document.getElementById('nowMeta').textContent = 'auto-transitioned by agent';
-  renderStructure('nowStructure', agentResult.next_structure||[]);
+  // mark outgoing song as played on backend
+  fetch('/played', {
+    method:'POST',
+    headers:{'Content-Type':'application/json'},
+    body: JSON.stringify({ session_id: sessionId, song: currentSongFile })
+  });
 
-  currentSongFile = agentResult.recommended_next_song;
-  currentBuffer = nextBuffer;
   currentSource = newSource;
   currentGain = newGain;
+  currentBuffer = nextBuffer;
+  currentSongFile = agentResult.recommended_next_song;
   currentSongDuration = nextBuffer.duration;
-  seekOffset = tIn;
+  seekOffset = agentResult.transition_in.time_sec;
   startTime = audioCtx.currentTime;
+  nextBuffer = null;
 
   agentResult = null;
   transitionScheduled = false;
-  transitionAccepted = false;
-  nextBuffer = null;
-  currentRating = 0;
-  sessionId = Math.random().toString(36).slice(2);
+  forcedMode = null;
+  isPaused = false;
 
+  document.getElementById('nowName').textContent = nextSongName;
+  document.getElementById('nowMeta').textContent = 'auto-transitioned';
   document.getElementById('upNextCard').classList.add('hidden');
-  document.getElementById('reasoningDiv').classList.add('hidden');
-  document.getElementById('feedbackCard').classList.add('hidden');
   document.getElementById('transitionMarker').classList.add('hidden');
   document.getElementById('totalTime').textContent = toMMSS(currentSongDuration);
   document.getElementById('transitionHint').textContent = '';
   document.getElementById('skipNextBtn').disabled = true;
   document.getElementById('pauseBtn').textContent = '⏸ Pause';
-  isPaused = false;
-  setStatus('Playing '+nextSongName+' — finding next song...','thinking');
+  document.querySelectorAll('.effect-btn').forEach(b=>b.classList.remove('active'));
+  renderStructure('nowStructure', []);
 
-  // auto-run agent for new song
+  currentRating = 0;
+  document.querySelectorAll('.star').forEach(s=>s.classList.remove('active'));
+  document.getElementById('feedbackComment').value = '';
+  document.getElementById('feedbackCard').classList.remove('hidden');
+
+  setStatus('Playing '+nextSongName+' — rate the transition above','idle');
   setTimeout(runAgent, 500);
 }
 
@@ -356,29 +494,28 @@ async function startPlayback() {
   const song = document.getElementById('songSelect').value;
   if (!song) return alert('Select a song first');
 
-  if (audioCtx) { audioCtx.close(); audioCtx = null; }
+  if (audioCtx) { audioCtx.close(); audioCtx=null; }
   audioCtx = new (window.AudioContext||window.webkitAudioContext)();
   agentResult = null;
   transitionScheduled = false;
-  transitionAccepted = false;
   seekOffset = 0;
   isPaused = false;
-  playedSongs = [song];
+  forcedMode = null;
   sessionId = Math.random().toString(36).slice(2);
-  updatePlayedList();
 
   setStatus('Loading audio...','thinking');
   document.getElementById('playBtn').disabled = true;
+  document.getElementById('feedbackCard').classList.add('hidden');
 
   currentBuffer = await fetchAudio(song);
   currentSongFile = song;
   currentSongDuration = currentBuffer.duration;
 
+  currentGain = audioCtx.createGain();
+  currentGain.connect(audioCtx.destination);
   currentSource = audioCtx.createBufferSource();
   currentSource.buffer = currentBuffer;
-  currentGain = audioCtx.createGain();
   currentSource.connect(currentGain);
-  currentGain.connect(audioCtx.destination);
   currentSource.start(0);
   startTime = audioCtx.currentTime;
   isPlaying = true;
@@ -395,8 +532,6 @@ async function startPlayback() {
 
   setStatus('Finding next song...','thinking');
   document.getElementById('playBtn').disabled = false;
-
-  // auto-run agent immediately
   setTimeout(runAgent, 500);
 }
 
@@ -406,13 +541,13 @@ async function runAgent() {
   setStatus('Agent analyzing...','thinking');
 
   try {
-    const res = await fetch('/analyze_with_feedback', {
+    const res = await fetch('/analyze', {
       method:'POST',
       headers:{'Content-Type':'application/json'},
-      body: JSON.stringify({current_song: song, played_songs: playedSongs, session_id: sessionId})
+      body: JSON.stringify({ current_song: song, session_id: sessionId, forced_mode: forcedMode })
     });
     agentResult = await res.json();
-    transitionAccepted = false;
+    agentResult._accepted = false;
 
     const nextSong = agentResult.recommended_next_song;
     document.getElementById('nextName').textContent = nextSong.replace('.mp3','').replace(/_/g,' ');
@@ -422,48 +557,30 @@ async function runAgent() {
     renderStructure('nowStructure', agentResult.current_structure||[]);
     renderStructure('nextStructure', agentResult.next_structure||[]);
     document.getElementById('reasoningText').textContent = agentResult.overall_reasoning;
+    document.getElementById('effectReason').textContent = agentResult.effect_reason||'—';
     document.getElementById('upNextCard').classList.remove('hidden');
-    document.getElementById('reasoningDiv').classList.remove('hidden');
-    document.getElementById('feedbackCard').classList.remove('hidden');
+    document.getElementById('acceptBtn').disabled = false;
 
-    // reset stars
-    currentRating = 0;
-    document.querySelectorAll('.star').forEach(s => s.classList.remove('active'));
-    document.getElementById('feedbackComment').value = '';
+    // highlight recommended effect
+    document.querySelectorAll('.effect-btn').forEach(b=>b.classList.remove('active'));
+    const eff = agentResult.transition_effect||'crossfade';
+    document.querySelectorAll('.effect-btn').forEach(b => {
+      const label = b.textContent.toLowerCase().replace(/[✦ ]/g,'').trim().replace(' ','_');
+      if ((!forcedMode&&b.textContent.includes('Auto'))||label===eff) b.classList.add('active');
+    });
 
-    setStatus('Recommendation ready — accept or give feedback','idle');
-
-    // preload next song in background
+    setStatus('Recommendation ready — accept to queue','idle');
     nextBuffer = await fetchAudio(nextSong);
-
-    const tOut = agentResult.transition_out.time_sec;
-    const marker = document.getElementById('transitionMarker');
-    marker.style.left = (tOut/currentSongDuration)*100+'%';
-    marker.classList.add('hidden'); // only show marker after accepted
 
   } catch(e) {
     setStatus('Error: '+e.message,'idle');
   }
 }
 
-async function acceptTransition() {
+function acceptTransition() {
   if (!agentResult) return;
-  transitionAccepted = true;
-
-  await fetch('/feedback', {
-    method:'POST',
-    headers:{'Content-Type':'application/json'},
-    body: JSON.stringify({
-      session_id: sessionId,
-      song: agentResult.recommended_next_song,
-      transition_out: agentResult.transition_out.time_sec,
-      transition_in: agentResult.transition_in.time_sec,
-      rating: currentRating || 5,
-      comment: document.getElementById('feedbackComment').value
-    })
-  });
-
-  document.getElementById('feedbackCard').classList.add('hidden');
+  agentResult._accepted = true;
+  document.getElementById('acceptBtn').disabled = true;
   document.getElementById('skipNextBtn').disabled = false;
 
   const tOut = agentResult.transition_out.time_sec;
@@ -471,37 +588,23 @@ async function acceptTransition() {
   marker.style.left = (tOut/currentSongDuration)*100+'%';
   marker.classList.remove('hidden');
 
-  setStatus('Queued — will auto-transition at '+toMMSS(tOut),'idle');
+  const mode = forcedMode||agentResult.transition_effect||'crossfade';
+  setStatus(`Queued — ${mode} at ${toMMSS(tOut)}`,'idle');
 }
 
-async function retryWithFeedback() {
-  if (!agentResult) return;
-  const comment = document.getElementById('feedbackComment').value;
-  const rating = currentRating || 2;
-
+async function submitFeedback() {
   await fetch('/feedback', {
     method:'POST',
     headers:{'Content-Type':'application/json'},
     body: JSON.stringify({
       session_id: sessionId,
-      song: agentResult.recommended_next_song,
-      transition_out: agentResult.transition_out.time_sec,
-      transition_in: agentResult.transition_in.time_sec,
-      rating: rating,
-      comment: comment
+      song: lastTransitionSong,
+      rating: currentRating||3,
+      comment: document.getElementById('feedbackComment').value
     })
   });
-
-  agentResult = null;
-  nextBuffer = null;
-  transitionAccepted = false;
-  document.getElementById('upNextCard').classList.add('hidden');
-  document.getElementById('reasoningDiv').classList.add('hidden');
   document.getElementById('feedbackCard').classList.add('hidden');
-  document.getElementById('transitionMarker').classList.add('hidden');
-  document.getElementById('skipNextBtn').disabled = true;
-
-  await runAgent();
+  setStatus('Feedback saved','idle');
 }
 
 function showToast(msg) {
@@ -509,7 +612,7 @@ function showToast(msg) {
   t.className = 'crossfade-overlay';
   t.textContent = msg;
   document.body.appendChild(t);
-  setTimeout(()=>t.remove(), 3000);
+  setTimeout(()=>t.remove(), 4000);
 }
 
 loadSongs();
