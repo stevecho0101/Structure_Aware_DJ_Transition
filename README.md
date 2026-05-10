@@ -143,32 +143,33 @@ Output (T, 4) — per-second class probabilities
 ---
 
 ## AI Agent
-`agent.py` takes the CNN's predicted labels and uses the Claude API to select the optimal transition point and recommend the best next song based on energy continuity. Tracks played songs so it won't repeat until all songs have been played.
+
+`agent.py` runs the CNN on all songs in `song_samples/` and caches the structural labels to disk. The agent then uses the Claude API to select the optimal transition point and recommend the best next song based on energy continuity and song structure. Tracks played songs so it won't repeat until the whole pool is exhausted, then resets.
 
 Install additional dependencies:
 ```
 pip install anthropic flask
 ```
 
-Set your Anthropic API key in `agent.py` and `app.py` (ask Anthony for API Key):
+Set your Anthropic API key in `agent.py` (ask Anthony for the key):
 ```python
-client = anthropic.Anthropic(api_key="your_key_here") 
+client = anthropic.Anthropic(api_key="your_key_here")
 ```
 
-
-Create the song samples folder and add a few mp3s:
+Create the song samples folder and drop some mp3s in:
 ```
 mkdir song_samples
 ```
-Drop any mp3 files into `song_samples/` — they will automatically show up in the UI and be used by the agent.
 
-> **Windows note:** If pydub can't find ffmpeg even after adding to PATH, add this to the top of `add_effect.py` and `app.py` and `agent.py` (I had to do this):
+Drop any mp3 files into `song_samples/` — they automatically show up in the UI and get picked up by the agent.
+
+> **Windows note:** If pydub can't find ffmpeg even after adding to PATH, add this to the top of `add_effect.py`, `app.py`, and `agent.py`:
 > ```python
 > import os
 > os.environ["PATH"] = r"C:\path\to\ffmpeg\bin" + ";" + os.environ.get("PATH", "")
 > ```
 
-Run the agent directly:
+**Run this first** to cache all CNN labels to disk (only needs to run once, or when new songs are added):
 ```
 python agent.py
 ```
@@ -176,9 +177,29 @@ python agent.py
 ---
 
 ## Live UI
-Browser-based live player — pick a song, hit Analyze, and it automatically crossfades into the recommended next song at the right timestamp. Added a feature to rate and give feedback to the agent for it to try and give another transition selection.
+
+Browser-based live DJ player powered by the agent. Pick a song, it starts playing, and the agent automatically analyzes the pool and recommends the best next song with a transition point and effect.
 
 ```
 python app.py
 ```
+
 Open `http://localhost:5000`.
+
+### How to use it
+
+1. **Search & select** a song from the dropdown and hit **Play**
+2. The agent runs in the background and a recommendation pops up automatically
+3. You'll see the **Up Next** card with the recommended song, transition timestamps, and agent reasoning
+4. Pick a **transition effect** (Auto lets the agent decide, or pick manually: Crossfade, EQ Sweep, LPF Sweep, Beatmatch)
+5. Hit **Accept & queue** — a yellow marker appears on the progress bar at the transition point
+6. The transition happens automatically at that timestamp using Web Audio API — no loading, seamless
+7. After the transition a **feedback card** appears — rate the transition and leave a comment
+8. The agent uses your feedback to improve the next recommendation
+9. Repeat
+
+### Transition effects (live in browser)
+- **Crossfade** — standard volume fade in/out
+- **LPF Sweep** — low pass filter muffles song 1 out while song 2 opens up (EDM style)
+- **EQ Sweep** — high pass filter cuts bass on song 1 while song 2's bass comes in (hip-hop/R&B style)
+- **Beatmatch** — adjusts song 2's playback rate to match song 1's BPM before fading in
