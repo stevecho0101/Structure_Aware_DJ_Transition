@@ -12,19 +12,19 @@ N_FFT = 2048
 HOP_LENGTH = 512
 N_MFCC = 13
 
-# Mel bin boundaries for low / low-mid / mid / high-mid / high (5 bands)
-BAND_BOUNDARIES = [0, 20, 40, 70, 100, 128]  # indices into mel bins
-BAND_NAMES = ["low", "low_mid", "mid", "high_mid", "high"]
-MFCC_NAMES = [f"mfcc_{i+1}" for i in range(N_MFCC)]
-CHROMA_NAMES = [f"chroma_{i+1}" for i in range(12)]
-CONTRAST_NAMES = [f"contrast_{i+1}" for i in range(6)]
+# 39 different features
+BAND_BOUNDARIES = [0, 20, 40, 70, 100, 128]                         # frequency band cutoffs
+BAND_NAMES = ["low", "low_mid", "mid", "high_mid", "high"]          # 5 frequency bands   
+MFCC_NAMES = [f"mfcc_{i+1}" for i in range(N_MFCC)]                 # Mel-frequency cepstral coefficient (used to detect "tone"/"shape")
+CHROMA_NAMES = [f"chroma_{i+1}" for i in range(12)]                 # chroma bins for each note (captures notes/chords)
+CONTRAST_NAMES = [f"contrast_{i+1}" for i in range(6)]              # captures contrast between loud and quiet parts 
 EXTRA_NAMES = ["rolloff", "zcr", "flatness"]
 
 # 5 + 13 + 12 + 6 + 3 = 39
 FEATURE_NAMES  = BAND_NAMES + MFCC_NAMES + CHROMA_NAMES + CONTRAST_NAMES + EXTRA_NAMES
 
 # Takes frame-level features and average them into 1-second window
-# Convert frames into seconds as that is what we want for our data
+# Convert frames into seconds
 def _aggregate_to_seconds(frames: np.ndarray, frames_per_sec: int) -> np.ndarray:
     n_seconds = frames.shape[0] // frames_per_sec
     out = np.zeros((n_seconds, frames.shape[1]), dtype=np.float32)
