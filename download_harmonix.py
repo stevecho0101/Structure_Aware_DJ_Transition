@@ -19,6 +19,7 @@ with open(urls_path) as f:
 
 print(f"Found {len(rows)} songs to download\n")
 
+# Goes through every song in the Harmonix CSV and downloads all as an MP3 file
 for row in rows:
     file_id = row["File"]
     url = row["URL"]
