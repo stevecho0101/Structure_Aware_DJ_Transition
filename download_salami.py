@@ -20,10 +20,10 @@ merged = meta.merge(pairings, on="salami_id", how="inner")
 print(f"Found {len(merged)} songs to download\n")
 
 for _, row in merged.iterrows():
-    song_id    = row["salami_id"]
+    song_id = row["salami_id"]
     youtube_id = row["youtube_id"]
-    name       = str(row.get("Name", song_id)).replace("/", "-")
-    out_path   = os.path.join(OUTDIR, f"salami_{song_id}_{name}.mp3")
+    name = str(row.get("Name", song_id)).replace("/", "-")
+    out_path = os.path.join(OUTDIR, f"salami_{song_id}_{name}.mp3")
 
     if os.path.exists(out_path):
         print(f"  Already exists: salami_{song_id} -> skipping")
