@@ -150,7 +150,7 @@ def run_epoch(model, loader, criterion, optimizer, device, train: bool):
         model.eval()  
         ctx = torch.no_grad()
 
-    total_loss = 0.0 # accumulators for loss and accuracy
+    total_loss = 0.0
     correct = 0
     total = 0  
 
@@ -244,7 +244,7 @@ def train():
     weights_tensor = torch.tensor(class_weights, dtype=torch.float32).to(device) # move class weights to device
     criterion = nn.CrossEntropyLoss(ignore_index=-1, weight=weights_tensor) # weighted loss, ignore padded positions
 
-    best_val_acc = 0.0 # track best validation accuracy seen so far
+    best_val_acc = 0.0
     epochs_no_improve = 0 # counter for early stopping
     save_path = os.path.join(BASE, "cnn_lstm_best.pt") # where to save the best model weights
 
@@ -301,20 +301,20 @@ def predict(mp3_path: str) -> np.ndarray:
     X_t = (X_t - g_mean) / g_std # apply same normalization used during training
 
     with torch.no_grad():  # no gradient needed for inference
-        logits = model(X_t) # forward pass → (1, T, 4)
+        logits = model(X_t) # forward pass (1, T, 4)
         preds = logits.squeeze(0).argmax(dim=-1).cpu().numpy() # pick best class per second
 
-    preds = preds + 1   # shift 0..3 → 1..4 to match original label convention
+    preds = preds + 1   # shift 0..3 to 1..4 to match original label convention
 
     # Median filter to remove single-second flickering
-    preds = medfilt(preds.astype(np.float32), kernel_size=9).astype(int)  # smooth noisy predictions
+    preds = medfilt(preds.astype(np.float32), kernel_size=9).astype(int) # smooth noisy predictions
 
     # Force the last contiguous segment to outro
     last_label = preds[-1]
     i = len(preds) - 1
     while i >= 0 and preds[i] == last_label:
         i -= 1
-    preds[i + 1:] = 4  # relabel the final segment as outro (4)
+    preds[i + 1:] = 4 # relabel the final segment as outro (4)
 
     return preds
 
@@ -337,6 +337,6 @@ def print_structure(mp3_path: str):
 # Main Function
 if __name__ == "__main__":
     if len(sys.argv) > 1:
-        print_structure(sys.argv[1])  # if an MP3 path is given, run inference
+        print_structure(sys.argv[1]) # if an MP3 path is given, run inference
     else:
         train() # otherwise run the full training pipeline
