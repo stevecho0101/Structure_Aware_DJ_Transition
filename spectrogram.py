@@ -14,11 +14,11 @@ N_MFCC = 13
 
 # Mel bin boundaries for low / low-mid / mid / high-mid / high (5 bands)
 BAND_BOUNDARIES = [0, 20, 40, 70, 100, 128]  # indices into mel bins
-BAND_NAMES     = ["low", "low_mid", "mid", "high_mid", "high"]
-MFCC_NAMES     = [f"mfcc_{i+1}" for i in range(N_MFCC)]
-CHROMA_NAMES   = [f"chroma_{i+1}" for i in range(12)]
+BAND_NAMES = ["low", "low_mid", "mid", "high_mid", "high"]
+MFCC_NAMES = [f"mfcc_{i+1}" for i in range(N_MFCC)]
+CHROMA_NAMES = [f"chroma_{i+1}" for i in range(12)]
 CONTRAST_NAMES = [f"contrast_{i+1}" for i in range(6)]
-EXTRA_NAMES    = ["rolloff", "zcr", "flatness"]
+EXTRA_NAMES = ["rolloff", "zcr", "flatness"]
 
 # 5 + 13 + 12 + 6 + 3 = 39
 FEATURE_NAMES  = BAND_NAMES + MFCC_NAMES + CHROMA_NAMES + CONTRAST_NAMES + EXTRA_NAMES
