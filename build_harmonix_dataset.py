@@ -79,6 +79,7 @@ def load_harmonix_annotation(file_id: str, n_seconds: int) -> np.ndarray | None:
 
 
 # Process Harmonix songs
+# AI Usage: Claude helped us how to format it into CSV file
 print("---Processing Harmonix songs---")
 
 for mp3_path in sorted(glob.glob(os.path.join(HARMONIX_MP3S, "*.mp3"))):
