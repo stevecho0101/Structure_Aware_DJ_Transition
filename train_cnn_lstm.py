@@ -165,7 +165,7 @@ def run_epoch(model, loader, criterion, optimizer, device, train: bool):
             if train:
                 X_batch = X_batch + torch.randn_like(X_batch) * 0.05  # add small noise to regularize
 
-            logits = model(X_batch) # forward pass → raw class scores (B, T, C)
+            logits = model(X_batch) # forward pass to raw class scores (B, T, C)
             loss = criterion(logits.view(-1, N_CLASSES), y_batch.view(-1))  # flatten time dim for loss, -1 = figure out the dimension automatically
 
             if train:
