@@ -78,6 +78,8 @@ def process_mp3(mp3_path: str) -> tuple[np.ndarray, np.ndarray] | None:
 
 
 # Process SALAMI songs
+
+# AI Usage: Claude helped us how to format it into CSV file
 print("---Processing SALAMI songs---")
 
 for mp3_path in sorted(glob.glob(os.path.join(SALAMI_MP3S, "salami_*.mp3"))):
