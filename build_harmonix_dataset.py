@@ -91,7 +91,7 @@ for mp3_path in sorted(glob.glob(os.path.join(HARMONIX_MP3S, "*.mp3"))):
 
     # There are cases where there are no useful annotations, thus automatically deletes
     if labels is None:
-        print(f"  SKIP {file_id} — no usable annotation")
+        print(f"  SKIP {file_id}, no usable annotation")
         continue
 
     # Save CSV with label column
