@@ -7,9 +7,9 @@ import os
 import csv
 import subprocess
 
-BASE        = os.path.dirname(__file__) or "."
+BASE = os.path.dirname(__file__) or "."
 HARMONIX_REPO = os.path.join(BASE, "harmonixset")
-OUTDIR      = os.path.join(BASE, "harmonix_mp3s")
+OUTDIR = os.path.join(BASE, "harmonix_mp3s")
 os.makedirs(OUTDIR, exist_ok=True)
 
 urls_path = os.path.join(HARMONIX_REPO, "dataset", "youtube_urls.csv")
@@ -21,14 +21,14 @@ print(f"Found {len(rows)} songs to download\n")
 
 for row in rows:
     file_id = row["File"]
-    url     = row["URL"]
+    url = row["URL"]
     out_path = os.path.join(OUTDIR, f"{file_id}.mp3")
 
     if os.path.exists(out_path):
         print(f"  Already exists: {file_id} — skipping")
         continue
 
-    print(f"  Downloading {file_id}")
+    print(f"Downloading {file_id}")
     result = subprocess.run([
         "yt-dlp", "-x", "--audio-format", "mp3",
         "--audio-quality", "0",
