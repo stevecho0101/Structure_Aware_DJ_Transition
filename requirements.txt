@@ -1,0 +1,9 @@
+numpy
+torch
+scipy
+scikit-learn]
+librosa
+pydub
+flask
+anthropic
+pandas
