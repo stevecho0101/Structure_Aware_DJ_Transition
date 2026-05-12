@@ -4,27 +4,6 @@
 
 **Python 3.10+** required.
 
-Downloading dependencies:
-
-```
-pip install -r requirements.txt
-```
-
-The `requirements.txt` covers:
-
-- `torch`, `numpy`, `scipy`, `scikit-learn`,`librosa`, `pydub`,`flask`,`anthropic`, `pandas`
-
-**ffmpeg** is also required by `librosa` and `pydub` to decode MP3s. Installation Instruction:
-
-- Mac: `brew install ffmpeg`
-- Windows:** Download the essential build from https://www.gyan.dev/ffmpeg/builds/. Access the folder, copy the path of the `/bin` folder, and go to windows->edit system variables->advanced->environment variables->path->new and paste the path
-
-> **Windows PATH note:** If pydub still can't find ffmpeg after adding to PATH, add this to the top of `add_effect.py`, `agent.py`, and `app.py`:
-> ```python
-> import os
-> os.environ["PATH"] = r"C:\path\to\ffmpeg\bin" + ";" + os.environ.get("PATH", "")
-> ```
-
 ---
 
 ## Steps to Reproduce Results
@@ -65,10 +44,26 @@ Structure_Aware_DJ_Transition/
 
 ### 2. Install dependencies
 
+Downloading dependencies:
+
 ```
 pip install -r requirements.txt
 ```
 
+The `requirements.txt` covers:
+
+- `torch`, `numpy`, `scipy`, `scikit-learn`,`librosa`, `pydub`,`flask`,`anthropic`, `pandas`
+
+**ffmpeg** is also required by `librosa` and `pydub` to decode MP3s. Installation Instruction:
+
+- Mac: `brew install ffmpeg`
+- Windows:** Download the essential build from https://www.gyan.dev/ffmpeg/builds/. Access the folder, copy the path of the `/bin` folder, and go to windows->edit system variables->advanced->environment variables->path->new and paste the path
+
+> **Windows PATH note:** If pydub still can't find ffmpeg after adding to PATH, add this to the top of `add_effect.py`, `agent.py`, and `app.py`:
+> ```python
+> import os
+> os.environ["PATH"] = r"C:\path\to\ffmpeg\bin" + ";" + os.environ.get("PATH", "")
+> ```
 ---
 
 ### 3. Download the MP3s
