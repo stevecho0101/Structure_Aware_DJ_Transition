@@ -32,7 +32,7 @@ def _aggregate_to_seconds(frames: np.ndarray, frames_per_sec: int) -> np.ndarray
         out[s] = frames[s * frames_per_sec:(s + 1) * frames_per_sec].mean(axis=0)
     return out
 
-# Load an MP3 and return a (T, 41) array of per-second features:
+# Load an MP3 and return a (T, 39) array of per-second features:
 #       - 5  mel energy bands     Shows energy of each of the frequency ranges (low, low-mid, mid, high-mid, high).
 #                                 Captures how bright and heavy the songs sound
 #       - 13 MFCCs                Mel-Frequency Cepstral Coefficients: Describe the shape of the sound's spectrum
