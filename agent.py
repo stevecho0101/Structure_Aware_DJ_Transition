@@ -104,6 +104,10 @@ Rules:
 - AVOID these recently played songs (cooldown): {avoid_str}
 - Prefer songs from a DIFFERENT artist than the current song and recent songs
 - If previous transitions had low ratings, try a completely different approach
+- When choosing the transition also consider how these songs are commonly used in DJ sets and include this in the overall reasoning
+- Don't transition out of intro of the song, do it later
+- Don't transition into an outro of the song, do it earlier
+- Try not to transition into 0:00 if possible
 
 Respond ONLY with this JSON format, no extra text:
 {{
@@ -116,7 +120,7 @@ Respond ONLY with this JSON format, no extra text:
   "overall_reasoning": "<2 sentences>"
 }}"""
 
-    client = anthropic.Anthropic(api_key="your_key_here")  # insert API key
+    client = anthropic.Anthropic(api_key="key-here")  # insert API key
     response = client.messages.create(
         model="claude-opus-4-5",
         max_tokens=1024,
