@@ -1,7 +1,5 @@
 # Structure-Aware DJ Transition: Setup and Usage Guide
 
-## Dependencies
-
 **Python 3.10+** required.
 
 ---
