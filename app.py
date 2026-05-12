@@ -24,7 +24,7 @@ def get_songs():
     return jsonify({"songs": songs})
 
 
-@app.route("/song_samples/<filename>")
+@app.route("/song_playlist/<filename>")
 def serve_song(filename):
     return send_from_directory(SAMPLES_DIR, filename)
 
