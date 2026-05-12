@@ -15,7 +15,7 @@ sys.path.insert(0, os.path.dirname(__file__))
 from train_cnn_lstm import predict
 
 SECTION_NAMES = {1: "intro", 2: "verse", 3: "chorus", 4: "outro"}
-SAMPLES_DIR = os.path.join(os.path.dirname(__file__), "song_samples")
+SAMPLES_DIR = os.path.join(os.path.dirname(__file__), "song_playlist")
 CACHE_FILE = os.path.join(os.path.dirname(__file__), "labels_cache.json")
 
 if os.path.exists(CACHE_FILE):
