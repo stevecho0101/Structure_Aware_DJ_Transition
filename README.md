@@ -1,4 +1,4 @@
-# Structure-Aware DJ Transition — Setup and Usage Guide
+# Structure-Aware DJ Transition: Setup and Usage Guide
 
 ## Dependencies
 
@@ -56,6 +56,9 @@ Structure_Aware_DJ_Transition/
 - salami-data-public/
 - matching-salami/
 - harmonixset/
+- song_playlist/
+- static/
+  - index.html
 ```
 
 ---
@@ -81,6 +84,8 @@ python download_harmonix.py
 ```
 
 Both scripts skip existing files and can be resumed. There may be failures due to copyright takedowns.
+
+The script will auto create `salami_mp3s/` and `harmonix_mp3s/`
 
 Downloaded files go into `salami_mp3s/` and `harmonix_mp3s/` respectively
 
