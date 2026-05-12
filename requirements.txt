@@ -1,7 +1,7 @@
 numpy
 torch
 scipy
-scikit-learn]
+scikit-learn
 librosa
 pydub
 flask
