@@ -144,6 +144,6 @@ This runs the CNN on every song in `song_samples/` and writes predictions to `la
 ```
 python app.py
 ```
-Open `http://localhost:5000` in your browser.
+Open `http://localhost:5000` in your browser
 
 ---
