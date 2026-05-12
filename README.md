@@ -2,8 +2,6 @@
 
 **Python 3.10+** required.
 
----
-
 ## Steps to Reproduce Results
 
 ### 1. Clone the repo and datasets
