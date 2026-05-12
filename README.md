@@ -40,8 +40,6 @@ Structure_Aware_DJ_Transition/
 
 ### 2. Install dependencies
 
-Downloading dependencies:
-
 ```
 pip install -r requirements.txt
 ```
