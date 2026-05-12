@@ -199,7 +199,7 @@ Open `http://localhost:5000`.
 9. Repeat
 
 ### Transition effects (live in browser)
-- **Crossfade** — standard volume fade in/out
-- **LPF Sweep** — low pass filter muffles song 1 out while song 2 opens up (EDM style)
-- **EQ Sweep** — high pass filter cuts bass on song 1 while song 2's bass comes in (hip-hop/R&B style)
-- **Beatmatch** — adjusts song 2's playback rate to match song 1's BPM before fading in
+- **Crossfade** - standard volume fade in/out
+- **LPF Sweep** - low pass filter muffles song 1 out while song 2 opens up (EDM style)
+- **EQ Sweep** - high pass filter cuts bass on song 1 while song 2's bass comes in (hip-hop/R&B style)
+- **Beatmatch** - adjusts song 2's playback rate to match song 1's BPM before fading in
