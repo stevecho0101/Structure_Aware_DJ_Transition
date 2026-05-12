@@ -231,7 +231,7 @@ function setRating(r) {
 
 async function fetchAudio(filename) {
   if (!audioCtx) audioCtx = new (window.AudioContext||window.webkitAudioContext)();
-  const res = await fetch('/song_samples/'+filename);
+  const res = await fetch('/song_playlist/'+filename);
   const buf = await res.arrayBuffer();
   return audioCtx.decodeAudioData(buf);
 }
