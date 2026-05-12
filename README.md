@@ -1,205 +1,155 @@
-# Structure-Aware DJ Transition
+# Structure-Aware DJ Transition — Setup and Usage Guide
 
-Music structure detection pipeline using a CNN + Bidirectional LSTM trained on SALAMI and Harmonix dataset annotations. Predicts per-second structural labels (intro, verse, chorus, outro) for any song.
+## Dependencies
 
----
+**Python 3.10+** required.
 
-## Setup
-
-### 1. Clone this repo
-
-```bash
-git clone https://github.com/stevecho0101/Structure_Aware_DJ_Transition.git
-cd Structure_Aware_DJ_Transition
-```
-
----
-
-### 2. Clone the required datasets (into the same folder)
-
-```bash
-git clone https://github.com/DDMAL/salami-data-public.git
-git clone https://github.com/jblsmith/matching-salami.git
-git clone https://github.com/urinieto/harmonixset.git
-```
-
-Your folder should look like this:
-```
-Structure_Aware_DJ_Transition/
-├── download_salami.py
-├── download_harmonix.py
-├── build_dataset.py
-├── build_harmonix_dataset.py
-├── train_cnn_lstm.py
-├── spectrogram.py
-├── salami-data-public/
-├── matching-salami/
-└── harmonixset/
-```
-
----
-
-### 3. Install dependencies
-
-Requires **Python 3.10+**
-
-```bash
-pip install torch librosa scipy scikit-learn numpy pandas yt-dlp
-```
-
-Also install **ffmpeg** (required by yt-dlp to convert audio):
-
-- **Mac:** `brew install ffmpeg`
-- **Windows:** Download from https://ffmpeg.org/download.html and add to PATH
-- **Linux:** `sudo apt install ffmpeg`
-
----
-
-### 4. Download the MP3s
-
-**SALAMI** (~237 usable songs, mixed genres):
-```bash
-python download_salami.py
-```
-
-**Harmonix** (~500+ pop songs):
-```bash
-python download_harmonix.py
-```
-
-Both scripts skip already-downloaded files so they can be resumed. Expect some failures due to copyright takedowns. Combined download takes 1–3 hours depending on your connection.
-
----
-
-### 5. Build the datasets
-
-```bash
-python build_dataset.py
-python build_harmonix_dataset.py
-```
-
-Extracts 39 per-second audio features from each MP3 and matches them to structural annotations:
-- 5 mel energy bands (low → high)
-- 13 MFCCs (timbre)
-- 12 chroma bins (harmony)
-- 6 spectral contrast bands
-- 1 spectral rolloff
-- 1 zero-crossing rate
-- 1 spectral flatness (vocal proxy)
-
-Labels: `1=intro  2=verse/bridge  3=chorus/hook  4=outro`
-
----
-
-### 6. Train the model
-
-```bash
-python train_cnn_lstm.py
-```
-
-Trains a CNN + Bidirectional LSTM on all available CSVs from both datasets combined. Saves:
-- `cnn_lstm_best.pt` — best model weights
-- `cnn_lstm_stats.npz` — global normalization statistics (required for inference)
-
----
-
-### 7. Predict structure for a new song
-
-```bash
-python train_cnn_lstm.py your_song.mp3
-```
-
-Or in Python:
-```python
-from train_cnn_lstm import predict, print_structure
-
-print_structure("your_song.mp3")
-
-labels = predict("your_song.mp3")  # array of 1..4 per second
-```
-
----
-
-## Model Architecture
+Downloading dependencies:
 
 ```
-Input (T, 39)
-  → Conv1d(39→32, k=3) + BatchNorm + ReLU + Dropout(0.3)
-  → Conv1d(32→64, k=5) + BatchNorm + ReLU + Dropout(0.3)
-  → BiLSTM(hidden=128, layers=2, dropout=0.5)
-  → Dropout(0.5)
-  → Linear(256→4)
-Output (T, 4) — per-second class probabilities
+pip install -r requirements.txt
 ```
 
----
+The `requirements.txt` covers:
 
-## Notes
+- `torch`, `numpy`, `scipy`, `scikit-learn`,`librosa`, `pydub`,`flask`,`anthropic`, `pandas`
 
-- `salami_mp3s/` and `harmonix_mp3s/` are not in the repo. Run the download scripts to generate them.
-- `cnn_lstm_best.pt` and `cnn_lstm_stats.npz` must be in the same folder as `train_cnn_lstm.py` for inference to work.
-- Val accuracy: ~52% on combined SALAMI + Harmonix dataset. Works best on songs with acoustically distinct sections (e.g. songs where chorus hits noticeably harder than verse).
+**ffmpeg** is also required by `librosa` and `pydub` to decode MP3s. Installation Instruction:
 
----
+- Mac: `brew install ffmpeg`
+- Windows:** Download from [ffmpeg.org](https://ffmpeg.org/download.html) and add the `bin/` folder to your system PATH
 
-## AI Agent
-
-`agent.py` runs the CNN on all songs in `song_samples/` and caches the structural labels to disk. The agent then uses the Claude API to select the optimal transition point and recommend the best next song based on energy continuity and song structure. Tracks played songs so it won't repeat until the whole pool is exhausted, then resets.
-
-Install additional dependencies:
-```
-pip install anthropic flask
-```
-
-Set your Anthropic API key in `agent.py` (ask Anthony for the key):
-```python
-client = anthropic.Anthropic(api_key="your_key_here")
-```
-
-Create the song samples folder and drop some mp3s in:
-```
-mkdir song_samples
-```
-
-Drop any mp3 files into `song_samples/` — they automatically show up in the UI and get picked up by the agent.
-
-> **Windows note:** If pydub can't find ffmpeg even after adding to PATH, add this to the top of `add_effect.py`, `app.py`, and `agent.py`:
+> **Windows PATH note:** If pydub still can't find ffmpeg after adding to PATH, add this to the top of `add_effect.py`, `agent.py`, and `app.py`:
 > ```python
 > import os
 > os.environ["PATH"] = r"C:\path\to\ffmpeg\bin" + ";" + os.environ.get("PATH", "")
 > ```
 
-**Run this first** to cache all CNN labels to disk (only needs to run once, or when new songs are added):
+---
+
+## Steps to Reproduce Results
+
+### 1. Clone the repo and datasets
+
+```bash
+git clone https://github.com/stevecho0101/Structure_Aware_DJ_Transition.git
+cd Structure_Aware_DJ_Transition
+
+git clone https://github.com/DDMAL/salami-data-public.git
+git clone https://github.com/jblsmith/matching-salami.git
+git clone https://github.com/urinieto/harmonixset.git
 ```
-python agent.py
+
+Folder Structure:
+
+```
+Structure_Aware_DJ_Transition/
+- train_cnn_lstm.py
+- spectrogram.py
+- build_salami_dataset.py
+- build_harmonix_dataset.py
+- download_salami.py
+- download_harmonix.py
+- agent.py
+- app.py
+- requirements.txt
+- salami-data-public/
+- matching-salami/
+- harmonixset/
 ```
 
 ---
 
-## Live UI
+### 2. Install dependencies
 
-Browser-based live DJ player powered by the agent. Pick a song, it starts playing, and the agent automatically analyzes the pool and recommends the best next song with a transition point and effect.
+```
+pip install -r requirements.txt
+```
 
+---
+
+### 3. Download the MP3s
+
+**SALAMI**:
+```
+python download_salami.py
+```
+
+**Harmonix**:
+```
+python download_harmonix.py
+```
+
+Both scripts skip existing files and can be resumed. There may be failures due to copyright takedowns.
+
+Downloaded files go into `salami_mp3s/` and `harmonix_mp3s/` respectively
+
+---
+
+### 4. Build the feature datasets
+
+```
+python build_salami_dataset.py
+python build_harmonix_dataset.py
+```
+
+For each MP3, the build files extract 39 per-second audio features and writes a `*_features.csv` alongside each MP3
+
+---
+
+### 5. Train the model
+
+```
+python train_cnn_lstm.py
+```
+
+Saved outputs:
+- `cnn_lstm_best.pt` — best model weights (by validation accuracy)
+- `cnn_lstm_stats.npz` — per-feature mean and std used for normalization at inference time
+
+Both files must be in the same directory as `train_cnn_lstm.py` for inference to work
+
+---
+
+### 6. Run inference on a new song
+
+If you wish to run inference on one mp3 use the command line:
+```
+python train_cnn_lstm.py your_song.mp3
+```
+Note: Make sure the mp3 file is in the same directory as train_cnn_lstm.py for it to work
+
+---
+
+## Using the Agent and Feedback Loop
+
+The agent integrates the trained model with the Claude API to power a live DJ set with automatic song recommendations and transition effects.
+
+### Setup
+
+**1. Set your Anthropic API key** in `agent.py`:
+```python
+client = anthropic.Anthropic(api_key="your_key_here")
+```
+For Grading: If API key is needed, please contact Steve Cho (smcho@usc.edu)
+
+**2. Add songs to the sample pool:**:
+Drop any MP3 files into `song_playlist/`
+
+Every file in this folder is automatically picked up by both the agent and the UI
+
+**3. Cache CNN labels**:
+
+Once sufficient songs are inside `song_playlist/` use the command line:
+```
+python agent.py
+```
+This runs the CNN on every song in `song_samples/` and writes predictions to `labels_cache.json`, such that we don't have to rerun the model everytime the app.py is ran
+
+**4. Start the web app:**
 ```
 python app.py
 ```
+Open `http://localhost:5000` in your browser.
 
-Open `http://localhost:5000`.
-
-### How to use it
-
-1. **Search & select** a song from the dropdown and hit **Play**
-2. The agent runs in the background and a recommendation pops up automatically
-3. You'll see the **Up Next** card with the recommended song, transition timestamps, and agent reasoning
-4. Pick a **transition effect** (Auto lets the agent decide, or pick manually: Crossfade, EQ Sweep, LPF Sweep, Beatmatch)
-5. Hit **Accept & queue** — a yellow marker appears on the progress bar at the transition point
-6. The transition happens automatically at that timestamp using Web Audio API — no loading, seamless
-7. After the transition a **feedback card** appears — rate the transition and leave a comment
-8. The agent uses your feedback to improve the next recommendation
-9. Repeat
-
-### Transition effects (live in browser)
-- **Crossfade** - standard volume fade in/out
-- **LPF Sweep** - low pass filter muffles song 1 out while song 2 opens up (EDM style)
-- **EQ Sweep** - high pass filter cuts bass on song 1 while song 2's bass comes in (hip-hop/R&B style)
-- **Beatmatch** - adjusts song 2's playback rate to match song 1's BPM before fading in
+---

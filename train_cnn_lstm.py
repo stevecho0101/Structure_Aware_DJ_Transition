@@ -245,6 +245,7 @@ def train():
     criterion = nn.CrossEntropyLoss(ignore_index=-1, weight=weights_tensor) # weighted loss, ignore padded positions
 
     best_val_acc = 0.0
+    best_train_acc = 0.0
     epochs_no_improve = 0 # counter for early stopping
     save_path = os.path.join(BASE, "cnn_lstm_best.pt") # where to save the best model weights
 
@@ -258,6 +259,7 @@ def train():
 
         if val_acc > best_val_acc: # new best? save weights
             best_val_acc = val_acc
+            best_train_acc = tr_acc
             epochs_no_improve = 0
             torch.save(model.state_dict(), save_path) # save only the weights, not the whole model
             star = " *" # mark this epoch as a new best in the printout
@@ -274,6 +276,7 @@ def train():
             break
 
     print(f"\nBest val accuracy : {best_val_acc:.3f}")
+    print(f"Train accuracy at best val: {best_train_acc:.3f}")
     print(f"Model saved : {save_path}")
 
 
