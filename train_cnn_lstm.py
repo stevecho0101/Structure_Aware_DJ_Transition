@@ -246,6 +246,7 @@ def train():
 
     best_val_acc = 0.0
     best_train_acc = 0.0
+    best_val_cls_acc = np.zeros(N_CLASSES)
     epochs_no_improve = 0 # counter for early stopping
     save_path = os.path.join(BASE, "cnn_lstm_best.pt") # where to save the best model weights
 
@@ -260,6 +261,7 @@ def train():
         if val_acc > best_val_acc: # new best? save weights
             best_val_acc = val_acc
             best_train_acc = tr_acc
+            best_val_cls_acc = val_cls_acc
             epochs_no_improve = 0
             torch.save(model.state_dict(), save_path) # save only the weights, not the whole model
             star = " *" # mark this epoch as a new best in the printout
@@ -277,6 +279,8 @@ def train():
 
     print(f"\nBest val accuracy : {best_val_acc:.3f}")
     print(f"Train accuracy at best val: {best_train_acc:.3f}")
+    cls = "  ".join(f"{LABEL_NAMES[c]}={best_val_cls_acc[c]:.3f}" for c in range(N_CLASSES))
+    print(f"Per-class accuracies at best val: [{cls}]")
     print(f"Model saved : {save_path}")
 
 
