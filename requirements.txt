@@ -7,3 +7,4 @@ pydub
 flask
 anthropic
 pandas
+yt-dlp
