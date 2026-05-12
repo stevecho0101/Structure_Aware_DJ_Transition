@@ -10,7 +10,7 @@ CNN + Bidirectional LSTM pipeline that detects per-second song structure (intro 
 
 Install all Python dependencies:
 
-```bash
+```
 pip install -r requirements.txt
 ```
 
