@@ -43,6 +43,10 @@ Structure_Aware_DJ_Transition/
 ```
 pip install -r requirements.txt
 ```
+If using conda environment do:
+```
+conda install -r requirements.txt
+```
 
 The `requirements.txt` covers:
 
